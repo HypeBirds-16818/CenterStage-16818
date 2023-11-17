@@ -13,7 +13,8 @@ import com.sfdev.assembly.state.StateMachineBuilder;
 @Config
 @TeleOp(name = "test")
 public class test_teleop extends LinearOpMode {
-    enum Intake {
+    public enum intakeState  {
+        IDLE,
         TAKING,
         RAISING1,
         RAISING2,
@@ -24,11 +25,7 @@ public class test_teleop extends LinearOpMode {
         FALLING2
     }
 
-    StateMachine machine = new StateMachineBuilder(){
-        .state(Intake.TAKING)
-        .build();
-    }
-
+    public int stage = 0;
     private PIDController controller;
 
     public static double p = 0, i = 0, d = 0;
@@ -43,18 +40,32 @@ public class test_teleop extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+
+
         controller = new PIDController(p, i, d);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         bottom_motor_1 = hardwareMap.get(DcMotorEx.class, "bottom_motor_1");
         bottom_motor_2 = hardwareMap.get(DcMotorEx.class, "bottom_motor_2");
 
+        StateMachine machine = new StateMachineBuilder()
+            .state(Intake.IDLE)
+            .transition(gamepad1.a)
+            .state(Intake.TAKING)
+            .onEnter(() -> {
+
+                stage = 1;
+            })
+            .transition(() -> stage == 1)
+            .state(Intake.RAISING1)
+                    .build();
+
         waitForStart();
 
         while (opModeIsActive() && !isStopRequested()) {
             controller.setPID(p, i, d);
-            int basePos = (bottom_motor_1.getCurrentPosition() + bottom_motor_2.getCurrentPosition())/2;
+            int basePos = (bottom_motor_1.getCurrentPosition() + bottom_motor_2.getCurrentPosition()) / 2;
             double pid = controller.calculate(basePos, target);
-            double ff = Math.cos(Math.toRadians(target/ticks_in_degree)) * f;
+            double ff = Math.cos(Math.toRadians(target / ticks_in_degree)) * f;
 
             double power = pid + ff;
 
@@ -66,7 +77,6 @@ public class test_teleop extends LinearOpMode {
             telemetry.update();
 
         }
-
     }
 }
 
