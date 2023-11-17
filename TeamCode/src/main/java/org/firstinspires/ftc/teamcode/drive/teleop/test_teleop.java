@@ -7,10 +7,28 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.sfdev.assembly.state.StateMachine;
+import com.sfdev.assembly.state.StateMachineBuilder;
 
 @Config
 @TeleOp(name = "test")
 public class test_teleop extends LinearOpMode {
+    enum Intake {
+        TAKING,
+        RAISING1,
+        RAISING2,
+        TURNING,
+        OPENING,
+        TURNINGBACK,
+        FALLING1,
+        FALLING2
+    }
+
+    StateMachine machine = new StateMachineBuilder(){
+        .state(Intake.TAKING)
+        .build();
+    }
+
     private PIDController controller;
 
     public static double p = 0, i = 0, d = 0;
@@ -51,3 +69,5 @@ public class test_teleop extends LinearOpMode {
 
     }
 }
+
+//https://state-factory.gitbook.io/state-factory/essential-usage
