@@ -28,12 +28,12 @@ public class test_teleop extends LinearOpMode {
     public int stage = 0;
     private PIDController controller;
 
-    public static double p = 0, i = 0, d = 0;
-    public static double f = 0;
+    public static double p = 0.03, i = 0, d = 0.0001;
+    public static double f = 0.1;
 
     public static int target = 0;
 
-    private final double ticks_in_degree = 0; //Añadir ticks
+    private final double ticks_in_degree = 1425.1;
 
     private DcMotorEx bottom_motor_1;
     private DcMotorEx bottom_motor_2;
@@ -46,19 +46,8 @@ public class test_teleop extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         bottom_motor_1 = hardwareMap.get(DcMotorEx.class, "bottom_motor_1");
         bottom_motor_2 = hardwareMap.get(DcMotorEx.class, "bottom_motor_2");
-
-        StateMachine machine = new StateMachineBuilder()
-            .state(Intake.IDLE)
-            .transition(gamepad1.a)
-            .state(Intake.TAKING)
-            .onEnter(() -> {
-
-                stage = 1;
-            })
-            .transition(() -> stage == 1)
-            .state(Intake.RAISING1)
-                    .build();
-
+        bottom_motor_1.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        bottom_motor_2.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         waitForStart();
 
         while (opModeIsActive() && !isStopRequested()) {
