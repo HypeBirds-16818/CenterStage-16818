@@ -7,8 +7,8 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.sfdev.assembly.state.StateMachine;
-import com.sfdev.assembly.state.StateMachineBuilder;
+//import com.sfdev.assembly.state.StateMachine;
+//import com.sfdev.assembly.state.StateMachineBuilder;
 
 @Config
 @TeleOp(name = "test")
@@ -31,7 +31,7 @@ public class test_teleop extends LinearOpMode {
     public static double p = 0.03, i = 0, d = 0.0001;
     public static double f = 0.1;
 
-    public static int target = 0;
+    public int target = 0;
 
     private final double ticks_in_degree = 1425.1;
 
@@ -60,6 +60,13 @@ public class test_teleop extends LinearOpMode {
 
             bottom_motor_1.setPower(power);
             bottom_motor_2.setPower(power);
+
+            if (gamepad1.dpad_up) {
+                target += 10;
+            }
+            if (gamepad1.dpad_down) {
+                target -= 10;
+            }
 
             telemetry.addData("base position: ", basePos);
             telemetry.addData("target position: ", target);
