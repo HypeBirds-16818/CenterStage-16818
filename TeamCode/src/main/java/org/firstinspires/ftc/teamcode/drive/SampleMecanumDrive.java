@@ -17,6 +17,7 @@ import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -71,7 +72,17 @@ public class SampleMecanumDrive extends MecanumDrive {
     private TrajectoryFollower follower;
 
     private DcMotorEx leftFront, leftRear, rightRear, rightFront;
+
+    private PIDController controller_t, controller_b;
+    private static double pt = 0.009, it = 0, dt = 0.0001, ft = 0.14;
+    private static double pb = 0.03, ib = 0, db = 0.0001, fb = 0.1;
+    private static int target_t = 0, target_b = 0;
+    private final double ticks_in_degree_b = 1425.1, ticks_in_degree_t = 751.8;
+    private DcMotorEx top_motor_1, top_motor_2;
+    private DcMotorEx bottom_motor_1, bottom_motor_2;
+
     private List<DcMotorEx> motors;
+    private List<DcMotorEx> intakeMotors;
 
     private IMU imu;
     private VoltageSensor batteryVoltageSensor;
@@ -104,7 +115,13 @@ public class SampleMecanumDrive extends MecanumDrive {
         rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
 
+        bottom_motor_1 = hardwareMap.get(DcMotorEx.class, "bottomMotor1");
+        bottom_motor_2 = hardwareMap.get(DcMotorEx.class, "bottomMotor2");
+        top_motor_1 = hardwareMap.get(DcMotorEx.class, "topMotor1");
+        top_motor_1 = hardwareMap.get(DcMotorEx.class, "topMotor2");
+
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
+        intakeMotors = Arrays.asList(bottom_motor_1, bottom_motor_2, top_motor_1, top_motor_2);
 
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
@@ -216,6 +233,12 @@ public class SampleMecanumDrive extends MecanumDrive {
         }
     }
 
+    public void setModeIntake(DcMotor.RunMode runMode) {
+        for (DcMotorEx intakeMotors : intakeMotors) {
+            intakeMotors.setMode(runMode);
+        }
+    }
+
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior zeroPowerBehavior) {
         for (DcMotorEx motor : motors) {
             motor.setZeroPowerBehavior(zeroPowerBehavior);
@@ -307,5 +330,37 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     public static TrajectoryAccelerationConstraint getAccelerationConstraint(double maxAccel) {
         return new ProfileAccelerationConstraint(maxAccel);
+    }
+
+    public void getBottomPID(int target){
+        controller_b.setPID(pb, ib, db);
+        int basePos = (bottom_motor_1.getCurrentPosition() + bottom_motor_2.getCurrentPosition()) / 2;
+        double pid = controller_b.calculate(basePos, target);
+        double ff = Math.cos(Math.toRadians(target / ticks_in_degree_b)) * fb;
+
+        double power = pid + ff;
+
+        bottomIntakeSetPwr(power);
+    }
+
+    public void bottomIntakeSetPwr(double power){
+        bottom_motor_1.setPower(power);
+        bottom_motor_2.setPower(power);
+    }
+
+    public void getTopPID(int target){
+        controller_b.setPID(pt, it, dt);
+        int topPos = (top_motor_1.getCurrentPosition() + top_motor_2.getCurrentPosition()) / 2;
+        double pid = controller_t.calculate(topPos, target);
+        double ff = Math.cos(Math.toRadians(target / ticks_in_degree_t)) * ft;
+
+        double power = pid + ff;
+
+        topIntakeSetPwr(power);
+    }
+
+    public void topIntakeSetPwr(double power){
+        top_motor_1.setPower(power);
+        top_motor_2.setPower(power);
     }
 }
