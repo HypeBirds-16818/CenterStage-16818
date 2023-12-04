@@ -74,9 +74,8 @@ public class SampleMecanumDrive extends MecanumDrive {
     private DcMotorEx leftFront, leftRear, rightRear, rightFront;
 
     private PIDController controller_t, controller_b;
-    private static double pt = 0.009, it = 0, dt = 0.0001, ft = 0.14;
-    private static double pb = 0.03, ib = 0, db = 0.0001, fb = 0.1;
-    private static int target_t = 0, target_b = 0;
+    private final double pt = 0.009, it = 0, dt = 0.0001, ft = 0.14;
+    private final double pb = 0.03, ib = 0, db = 0.0001, fb = 0.1;
     private final double ticks_in_degree_b = 1425.1, ticks_in_degree_t = 751.8;
     private DcMotorEx top_motor_1, top_motor_2;
     private DcMotorEx bottom_motor_1, bottom_motor_2;
@@ -118,7 +117,10 @@ public class SampleMecanumDrive extends MecanumDrive {
         bottom_motor_1 = hardwareMap.get(DcMotorEx.class, "bottomMotor1");
         bottom_motor_2 = hardwareMap.get(DcMotorEx.class, "bottomMotor2");
         top_motor_1 = hardwareMap.get(DcMotorEx.class, "topMotor1");
-        top_motor_1 = hardwareMap.get(DcMotorEx.class, "topMotor2");
+        top_motor_2 = hardwareMap.get(DcMotorEx.class, "topMotor2");
+
+        controller_b = new PIDController(pb, ib, db);
+        controller_t = new PIDController(pt, it, dt);
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
         intakeMotors = Arrays.asList(bottom_motor_1, bottom_motor_2, top_motor_1, top_motor_2);
