@@ -79,7 +79,9 @@ public class SampleMecanumDrive extends MecanumDrive {
     private final double ticks_in_degree_b = 1425.1, ticks_in_degree_t = 751.8;
     private DcMotorEx top_motor_1, top_motor_2;
     private DcMotorEx bottom_motor_1, bottom_motor_2;
-
+    public enum intakeState  {
+        IDLE, TAKING, RAISING1, RAISING2, TURNING, OPENING, TURNINGBACK, FALLING1, FALLING2
+    }
     private List<DcMotorEx> motors;
     private List<DcMotorEx> intakeMotors;
 

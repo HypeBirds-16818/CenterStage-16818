@@ -16,6 +16,8 @@ public class test_integration extends LinearOpMode {
     CRServo planeServo;
 
 
+    SampleMecanumDrive.intakeState intakeState = SampleMecanumDrive.intakeState.IDLE;
+
     @Override
     public void runOpMode() throws InterruptedException {
         drive.setModeIntake(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -33,6 +35,72 @@ public class test_integration extends LinearOpMode {
             }
             if(gamepad1.x){
                 planeServo.setPower(0);
+            }
+
+            switch (intakeState) {
+                case IDLE:
+                    if(gamepad2.a){
+                        //Tirar intake abajo
+                        intakeState = SampleMecanumDrive.intakeState.TAKING;
+                    }
+                break;
+                case TAKING:
+                    //rodar intake x segundos hacia adentro
+
+                    if(gamepad2.a){ //Presionar a cuando agarre las cosas
+                        //subir intaka y pararlo
+                        intakeState = SampleMecanumDrive.intakeState.RAISING1;
+                    }
+
+                break;
+                case RAISING1:
+                    //subir el intake primer etapa
+
+                    intakeState = SampleMecanumDrive.intakeState.RAISING2;
+
+                    break;
+                case RAISING2:
+
+                    //subir el intake etapa final
+                    intakeState = SampleMecanumDrive.intakeState.TURNING;
+
+                    break;
+                case TURNING:
+
+                    //voltear los servos de la caja para dejarla pegada al backdrop
+                    if(gamepad2.a) {  //esperar input para voltear
+                        intakeState = SampleMecanumDrive.intakeState.OPENING;
+                    }
+                    break;
+                case OPENING:
+
+                    //abrir servo de caja para dejar caer los pixeles
+                    if(gamepad2.a){ //esperar input para empezar descenso
+                        intakeState = SampleMecanumDrive.intakeState.TURNINGBACK;
+                    }
+
+                    break;
+                case TURNINGBACK:
+
+                    //cerrar caja
+                    //voltearla a posicion inicial
+                    intakeState = SampleMecanumDrive.intakeState.FALLING1;
+
+                    break;
+                case FALLING1:
+
+                    //caida etapa inicial
+                    intakeState = SampleMecanumDrive.intakeState.FALLING2;
+
+                    break;
+                case FALLING2:
+
+                    //caida etapa final (posicion inicial)
+                    //bajar motor lentamente para asegurar que este hasta abajo
+                    //reiniciar encoders para asegurar el 0
+                    intakeState = SampleMecanumDrive.intakeState.IDLE;
+
+                    break;
             }
         }
     }
