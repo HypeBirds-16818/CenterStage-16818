@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.drive.teleop;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -10,34 +11,36 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
+@Config
 @TeleOp(name = "Integrated Test")
 public class test_integration extends LinearOpMode {
-    SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-    CRServo planeServo;
+    SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap); // Creacion de drive
+    CRServo planeServo; // Declarar servo del avion (Meter al MechanumDrive)
+    public static int target = 0; // target para tunear con Dashboard (temporal)
+    public static String section = "Top"; // seccion para tunear con Dashboard (temporal)
 
-
-    SampleMecanumDrive.intakeState intakeState = SampleMecanumDrive.intakeState.IDLE;
+    SampleMecanumDrive.intakeState intakeState = SampleMecanumDrive.intakeState.IDLE; // Inicializar maquina de estado en "IDLE"
 
     @Override
     public void runOpMode() throws InterruptedException {
-        drive.setModeIntake(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        planeServo = hardwareMap.get(CRServo.class, "planeServo");
+        drive.setModeIntake(DcMotor.RunMode.STOP_AND_RESET_ENCODER); //Resetear encoders a 0 apenas se ponga play
+        planeServo = hardwareMap.get(CRServo.class, "planeServo"); // Conseguir servo avion del hardware map (Meter al MechanumDrive)
         waitForStart();
 
-        while (opModeIsActive() && !isStopRequested()) {
-            setPid(drive, "Top", 100);
+        while (opModeIsActive() && !isStopRequested()) { //loop
+            setPid(drive, section, target); // PID para tunear (temporal)
 
             if(gamepad1.a){
-                planeServo.setPower(1);
+                planeServo.setPower(1); // Probar a donde tiene que girar el servo del avion
             }
             if(gamepad1.b){
-                planeServo.setPower(-1);
+                planeServo.setPower(-1); // Probar a donde tiene que girar el servo del avion
             }
             if(gamepad1.x){
-                planeServo.setPower(0);
+                planeServo.setPower(0); // Parar el servo
             }
 
-            switch (intakeState) {
+            switch (intakeState) { // Maquina de estado
                 case IDLE:
                     if(gamepad2.a){
                         //Tirar intake abajo
