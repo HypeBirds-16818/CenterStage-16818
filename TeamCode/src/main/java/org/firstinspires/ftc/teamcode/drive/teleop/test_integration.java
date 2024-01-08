@@ -23,12 +23,12 @@ public class test_integration extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        drive.setModeIntake(DcMotor.RunMode.STOP_AND_RESET_ENCODER); //Resetear encoders a 0 apenas se ponga play
+        drive.setSlideMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); //Resetear encoders a 0 apenas se ponga play
         planeServo = hardwareMap.get(CRServo.class, "planeServo"); // Conseguir servo avion del hardware map (Meter al MechanumDrive)
         waitForStart();
 
         while (opModeIsActive() && !isStopRequested()) { //loop
-            setPid(drive, section, target); // PID para tunear (temporal)
+            //setPid(drive, section, target); // PID para tunear (temporal)
 
             if(gamepad1.a){
                 planeServo.setPower(1); // Probar a donde tiene que girar el servo del avion
@@ -134,6 +134,7 @@ public class test_integration extends LinearOpMode {
         }
     }
 
+    /*
     public void setPid(SampleMecanumDrive drive, String PIDcase, int target){
         if (PIDcase.equals("Top")){
             drive.getTopPID(target);
@@ -145,6 +146,8 @@ public class test_integration extends LinearOpMode {
 
 
     }
+    */
+
 
 }
 

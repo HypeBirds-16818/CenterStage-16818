@@ -22,6 +22,7 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
@@ -73,17 +74,15 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     private DcMotorEx leftFront, leftRear, rightRear, rightFront;
 
-    private PIDController controller_t, controller_b;
+    private PIDController controller_t;
     private final double pt = 0.009, it = 0, dt = 0.0001, ft = 0.14;
-    private final double pb = 0.03, ib = 0, db = 0.0001, fb = 0.1;
-    private final double ticks_in_degree_b = 1425.1, ticks_in_degree_t = 751.8;
-    private DcMotorEx top_motor_1, top_motor_2;
-    private DcMotorEx bottom_motor_1, bottom_motor_2;
+    private final double ticks_in_degree = 537.7;
+    private DcMotorEx linear_slide, intake_motor;
+
     public enum intakeState  {
         IDLE, TAKING, RAISING1, RAISING2, TURNING, OPENING, TURNINGBACK, FALLING1, FALLING2
     }
     private List<DcMotorEx> motors;
-    private List<DcMotorEx> intakeMotors;
 
     private IMU imu;
     private VoltageSensor batteryVoltageSensor;
@@ -116,16 +115,12 @@ public class SampleMecanumDrive extends MecanumDrive {
         rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
 
-        bottom_motor_1 = hardwareMap.get(DcMotorEx.class, "bottomMotor1");
-        bottom_motor_2 = hardwareMap.get(DcMotorEx.class, "bottomMotor2");
-        top_motor_1 = hardwareMap.get(DcMotorEx.class, "topMotor1");
-        top_motor_2 = hardwareMap.get(DcMotorEx.class, "topMotor2");
+        linear_slide = hardwareMap.get(DcMotorEx.class, "linearSlide");
+        intake_motor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
 
-        controller_b = new PIDController(pb, ib, db);
         controller_t = new PIDController(pt, it, dt);
 
-        motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
-        intakeMotors = Arrays.asList(bottom_motor_1, bottom_motor_2, top_motor_1, top_motor_2);
+        motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront, linear_slide, intake_motor);
 
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
@@ -144,12 +139,15 @@ public class SampleMecanumDrive extends MecanumDrive {
         }
 
         // TODO: reverse any motors using DcMotor.setDirection()
+        rightFront.setDirection(DcMotorEx.Direction.REVERSE);
+        leftRear.setDirection(DcMotorEx.Direction.REVERSE);
 
         List<Integer> lastTrackingEncPositions = new ArrayList<>();
         List<Integer> lastTrackingEncVels = new ArrayList<>();
 
         // TODO: if desired, use setLocalizer() to change the localization method
         // setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap, lastTrackingEncPositions, lastTrackingEncVels));
+        setLocalizer(new TwoWheelTrackingLocalizer(hardwareMap, this));
 
         trajectorySequenceRunner = new TrajectorySequenceRunner(
                 follower, HEADING_PID, batteryVoltageSensor,
@@ -237,11 +235,10 @@ public class SampleMecanumDrive extends MecanumDrive {
         }
     }
 
-    public void setModeIntake(DcMotor.RunMode runMode) {
-        for (DcMotorEx intakeMotors : intakeMotors) {
-            intakeMotors.setMode(runMode);
-        }
+    public void setSlideMode(DcMotor.RunMode runMode) {
+            linear_slide.setMode(runMode);
     }
+
 
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior zeroPowerBehavior) {
         for (DcMotorEx motor : motors) {
@@ -336,35 +333,15 @@ public class SampleMecanumDrive extends MecanumDrive {
         return new ProfileAccelerationConstraint(maxAccel);
     }
 
-    public void getBottomPID(int target){
-        controller_b.setPID(pb, ib, db);
-        int basePos = (bottom_motor_1.getCurrentPosition() + bottom_motor_2.getCurrentPosition()) / 2;
-        double pid = controller_b.calculate(basePos, target);
-        double ff = Math.cos(Math.toRadians(target / ticks_in_degree_b)) * fb;
-
-        double power = pid + ff;
-
-        bottomIntakeSetPwr(power);
-    }
-
-    public void bottomIntakeSetPwr(double power){
-        bottom_motor_1.setPower(power);
-        bottom_motor_2.setPower(power);
-    }
-
-    public void getTopPID(int target){
-        controller_b.setPID(pt, it, dt);
-        int topPos = (top_motor_1.getCurrentPosition() + top_motor_2.getCurrentPosition()) / 2;
+    public void getPID(int target){
+        controller_t.setPID(pt, it, dt);
+        int topPos = linear_slide.getCurrentPosition();
         double pid = controller_t.calculate(topPos, target);
-        double ff = Math.cos(Math.toRadians(target / ticks_in_degree_t)) * ft;
+        double ff = Math.cos(Math.toRadians(target / ticks_in_degree)) * ft;
 
         double power = pid + ff;
 
-        topIntakeSetPwr(power);
+        linear_slide.setPower(power);
     }
 
-    public void topIntakeSetPwr(double power){
-        top_motor_1.setPower(power);
-        top_motor_2.setPower(power);
-    }
 }
