@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.drive.teleop;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -9,39 +10,48 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
-/**
- * This opmode demonstrates how one would implement field centric control using
- * `SampleMecanumDrive.java`. This file is essentially just `TeleOpDrive.java` with the addition of
- * field centric control. To achieve field centric control, the only modification one needs is to
- * rotate the input vector by the current heading before passing it into the inverse kinematics.
- * <p>
- * See lines 42-57.
- */
-@TeleOp(group = "advanced")
+@TeleOp(name = "TeleOpCCM")
 public class TeleOpFieldCentric extends LinearOpMode {
-    private DcMotorEx intakeMotor;
+    private DcMotorEx intakeMotor, linearSlide;
+
+    private PIDController controller;
+
+    public static double p = 0.008, i = 0, d = 0.0001;
+    public static double f = 0.1;
+    public static int target = 0;
+    private final double ticks_in_degree = 537.7;
+
+
     @Override
     public void runOpMode() throws InterruptedException {
         // Initialize SampleMecanumDrive
+        controller = new PIDController(p, i, d);
+
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-        // We want to turn off velocity control for teleop
-        // Velocity control per wheel is not necessary outside of motion profiled auto
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        // Retrieve our pose from the PoseStorage.currentPose static field
-        // See AutoTransferPose.java for further details
         drive.setPoseEstimate(PoseStorage.currentPose);
 
+        linearSlide = hardwareMap.get(DcMotorEx.class, "linearSlide");
         intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
+
+        linearSlide.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
 
         waitForStart();
 
         if (isStopRequested()) return;
 
         while (opModeIsActive() && !isStopRequested()) {
+            controller.setPID(p, i, d);
+            int basePos = linearSlide.getCurrentPosition();
+            double pid = controller.calculate(basePos, target);
+            double ff = Math.cos(Math.toRadians(target / ticks_in_degree)) * f;
 
-            
+            double power = pid + ff;
+
+            linearSlide.setPower(power);
+
             // Read pose
             Pose2d poseEstimate = drive.getPoseEstimate();
 
@@ -61,6 +71,29 @@ public class TeleOpFieldCentric extends LinearOpMode {
                             -gamepad1.right_stick_x
                     )
             );
+
+            if(gamepad2.a){
+                //base
+                target = 0;
+            }
+            if(gamepad2.b){
+                //segunda linea
+                target = 2300;
+            }
+            if(gamepad2.x){
+                //tercera linea
+                target = 3000;
+            }
+
+            if(gamepad2.left_bumper == true){
+                //intake adentro
+                intakeMotor.setPower(1);
+            }
+
+            if(gamepad2.right_bumper == true){
+                //intake afuera
+                intakeMotor.setPower(-1);
+            }
 
             // Update everything. Odometry. Etc.
             drive.update();
