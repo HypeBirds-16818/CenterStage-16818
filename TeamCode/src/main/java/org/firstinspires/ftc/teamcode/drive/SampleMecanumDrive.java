@@ -26,6 +26,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
@@ -61,6 +62,7 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     public static double LATERAL_MULTIPLIER = 1.363636;
 
+
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
     public static double OMEGA_WEIGHT = 1;
@@ -79,9 +81,12 @@ public class SampleMecanumDrive extends MecanumDrive {
     private final double ticks_in_degree = 537.7;
     private DcMotorEx linear_slide, intake_motor;
 
+    private Servo servo_base, servo_caja;
+
     public enum intakeState  {
         IDLE, TAKING, RAISING1, RAISING2, TURNING, OPENING, TURNINGBACK, FALLING1, FALLING2
     }
+
     private List<DcMotorEx> motors;
 
     private IMU imu;
@@ -117,6 +122,9 @@ public class SampleMecanumDrive extends MecanumDrive {
 
         linear_slide = hardwareMap.get(DcMotorEx.class, "linearSlide");
         intake_motor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
+
+        servo_caja = hardwareMap.get(Servo.class, "servoCaja");
+        servo_base = hardwareMap.get(Servo.class, "servoBase");
 
         controller_t = new PIDController(pt, it, dt);
 
@@ -312,6 +320,17 @@ public class SampleMecanumDrive extends MecanumDrive {
         rightFront.setPower(v3);
     }
 
+    public void setIntakePower(double v) {
+        intake_motor.setPower(v);
+    }
+
+    public void setServoBase(double pos){
+        servo_base.setPosition(pos);
+    }
+
+    public void setServoCaja(double pos){
+        servo_caja.setPosition(pos);
+    }
     @Override
     public double getRawExternalHeading() {
         return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);

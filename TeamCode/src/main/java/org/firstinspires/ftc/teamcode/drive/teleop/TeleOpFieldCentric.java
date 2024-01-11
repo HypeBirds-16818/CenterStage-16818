@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
@@ -19,7 +20,6 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
  */
 @TeleOp(group = "advanced")
 public class TeleOpFieldCentric extends LinearOpMode {
-    private DcMotorEx intakeMotor;
     @Override
     public void runOpMode() throws InterruptedException {
         // Initialize SampleMecanumDrive
@@ -33,17 +33,16 @@ public class TeleOpFieldCentric extends LinearOpMode {
         // See AutoTransferPose.java for further details
         drive.setPoseEstimate(PoseStorage.currentPose);
 
-        intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
-
         waitForStart();
 
         if (isStopRequested()) return;
 
         while (opModeIsActive() && !isStopRequested()) {
 
-            
             // Read pose
             Pose2d poseEstimate = drive.getPoseEstimate();
+
+            // Movimiento de chasis
 
             // Create a vector from the gamepad x/y inputs
             // Then, rotate that vector by the inverse of that heading
@@ -61,6 +60,34 @@ public class TeleOpFieldCentric extends LinearOpMode {
                             -gamepad1.right_stick_x
                     )
             );
+            if(gamepad1.dpad_left)
+                drive.setMotorPowers(-.2, .2, -.2, .2);
+            if(gamepad1.dpad_right)
+                drive.setMotorPowers(.2, -.2, .2, -.2);
+            if(gamepad1.dpad_up)
+                drive.setMotorPowers(.2, .2, .2, .2);
+            if(gamepad1.dpad_down)
+                drive.setMotorPowers(-.2, -.2, -.2, -.2);
+
+            //Elevador
+
+
+            //Intake
+            double intakePower = Range.clip(gamepad2.right_stick_y, -1, 1);
+            drive.setIntakePower(intakePower);
+
+            //Outake
+            if(gamepad2.b)
+                drive.setServoBase(.5);
+            if(gamepad2.x)
+                drive.setServoBase(1);
+            if(gamepad2.y)
+                drive.setServoBase(-.5);
+            if(gamepad2.a)
+                drive.setServoBase(-1);
+
+            //Climber (to do)
+
 
             // Update everything. Odometry. Etc.
             drive.update();
