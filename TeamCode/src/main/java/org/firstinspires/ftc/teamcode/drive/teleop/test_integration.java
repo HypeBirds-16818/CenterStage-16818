@@ -44,38 +44,29 @@ public class test_integration extends LinearOpMode {
                 case IDLE:
                     if(gamepad2.a){
                         //Tirar intake abajo
-
                         intakeState = SampleMecanumDrive.intakeState.TAKING;
                     }
                 break;
                 case TAKING:
                     //rodar intake x segundos hacia adentro
-
                     if(gamepad2.a){ //Presionar a cuando agarre las cosas
                         //subir intaka y pararlo
                         intakeState = SampleMecanumDrive.intakeState.RAISING1;
                     }
-
                 break;
                 case RAISING1:
                     //subir el intake primer etapa
                     //setPid(drive, "Bottom", firstStage);
                     //setPid(drive, "Top", firstStage);
-
                     intakeState = SampleMecanumDrive.intakeState.RAISING2;
-
                     break;
                 case RAISING2:
-
                     //subir el intake etapa final
                     //setPid(drive, "Bottom", finalStage);
                     //setPid(drive, "Top", finalStage);
-
                     intakeState = SampleMecanumDrive.intakeState.TURNING;
-
                     break;
                 case TURNING:
-
                     //voltear los servos de la caja para dejarla pegada al backdrop
                     //servo1.setPosition()
                     //servo2.setPosition()
