@@ -10,15 +10,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
-/**
- * This opmode demonstrates how one would implement field centric control using
- * `SampleMecanumDrive.java`. This file is essentially just `TeleOpDrive.java` with the addition of
- * field centric control. To achieve field centric control, the only modification one needs is to
- * rotate the input vector by the current heading before passing it into the inverse kinematics.
- * <p>
- * See lines 42-57.
- */
-@TeleOp(group = "advanced")
+@TeleOp(name = "TeleOpCCM")
 public class TeleOpFieldCentric extends LinearOpMode {
     public static int target = 0;
 
