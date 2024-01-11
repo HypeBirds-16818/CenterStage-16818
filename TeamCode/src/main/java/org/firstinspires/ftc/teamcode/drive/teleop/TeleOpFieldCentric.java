@@ -25,7 +25,7 @@ public class TeleOpFieldCentric extends LinearOpMode {
 
         // Retrieve our pose from the PoseStorage.currentPose static field
         // See AutoTransferPose.java for further details
-        drive.setPoseEstimate(PoseStorage.currentPose);
+        drive.setPoseEstimate(SavePose.currentPose);
 
         drive.setSlideMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -56,6 +56,8 @@ public class TeleOpFieldCentric extends LinearOpMode {
                             -gamepad1.right_stick_x
                     )
             );
+
+            //Small movement
             if(gamepad1.dpad_left)
                 drive.setMotorPowers(-.2, .2, -.2, .2);
             if(gamepad1.dpad_right)
@@ -80,7 +82,7 @@ public class TeleOpFieldCentric extends LinearOpMode {
                 target = 3000;
             }
 
-            //Intake
+            //Intake (Maybe use bumpers?)
             double intakePower = Range.clip(gamepad2.right_stick_y, -1, 1);
             drive.setIntakePower(intakePower);
 

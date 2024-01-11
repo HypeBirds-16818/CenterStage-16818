@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.drive.teleop.SavePose;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
 public class AzulBackboard extends LinearOpMode {
@@ -48,5 +49,7 @@ public class AzulBackboard extends LinearOpMode {
         if(isStopRequested()) return;
 
         drive.followTrajectorySequence(Azul_Backboard_Medio);
+
+        SavePose.currentPose = drive.getPoseEstimate();
     }
 }
