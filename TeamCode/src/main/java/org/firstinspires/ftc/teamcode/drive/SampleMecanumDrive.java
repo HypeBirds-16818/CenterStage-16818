@@ -77,7 +77,8 @@ public class SampleMecanumDrive extends MecanumDrive {
     private DcMotorEx leftFront, leftRear, rightRear, rightFront;
 
     private PIDController controller_t;
-    private final double pt = 0.009, it = 0, dt = 0.0001, ft = 0.14;
+    private final double pt = 0.008, it = 0, dt = 0.0001, ft = 0.1;
+    private static int target = 0;
     private final double ticks_in_degree = 537.7;
     private DcMotorEx linear_slide, intake_motor;
 

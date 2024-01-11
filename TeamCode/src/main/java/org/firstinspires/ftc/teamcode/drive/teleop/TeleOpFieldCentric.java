@@ -20,6 +20,8 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
  */
 @TeleOp(group = "advanced")
 public class TeleOpFieldCentric extends LinearOpMode {
+    public static int target = 0;
+
     @Override
     public void runOpMode() throws InterruptedException {
         // Initialize SampleMecanumDrive
@@ -32,6 +34,8 @@ public class TeleOpFieldCentric extends LinearOpMode {
         // Retrieve our pose from the PoseStorage.currentPose static field
         // See AutoTransferPose.java for further details
         drive.setPoseEstimate(PoseStorage.currentPose);
+
+        drive.setSlideMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         waitForStart();
 
@@ -70,7 +74,19 @@ public class TeleOpFieldCentric extends LinearOpMode {
                 drive.setMotorPowers(-.2, -.2, -.2, -.2);
 
             //Elevador
-
+            drive.getPID(target);
+            if(gamepad2.a){
+                //base
+                target = 0;
+            }
+            if(gamepad2.b){
+                //segunda linea
+                target = 2300;
+            }
+            if(gamepad2.x){
+                //tercera linea
+                target = 3000;
+            }
 
             //Intake
             double intakePower = Range.clip(gamepad2.right_stick_y, -1, 1);
