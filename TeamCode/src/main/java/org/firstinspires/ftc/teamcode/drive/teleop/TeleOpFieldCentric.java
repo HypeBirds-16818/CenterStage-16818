@@ -32,9 +32,18 @@ public class TeleOpFieldCentric extends LinearOpMode {
 
         waitForStart();
 
+        drive.setLedMode();
+
         if (isStopRequested()) return;
 
         while (opModeIsActive() && !isStopRequested()) {
+
+            if(lockClimber == false){
+                drive.turnRed();
+            }
+            else {
+                drive.turnGreen();
+            }
 
             // Read pose
             Pose2d poseEstimate = drive.getPoseEstimate();

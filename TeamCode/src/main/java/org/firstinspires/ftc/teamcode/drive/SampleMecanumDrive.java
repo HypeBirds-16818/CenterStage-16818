@@ -23,6 +23,7 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
@@ -82,6 +83,8 @@ public class SampleMecanumDrive extends MecanumDrive {
     private final double ticks_in_degree = 537.7;
     private final double ticks_in_degree_c = 537.7;
     private DcMotorEx linear_slide, intake_motor, motor_climber;
+    private DigitalChannel redLED;
+    private DigitalChannel greenLED;
 
     private Servo servo_base, servo_caja;
 
@@ -128,6 +131,9 @@ public class SampleMecanumDrive extends MecanumDrive {
 
         servo_caja = hardwareMap.get(Servo.class, "servoCaja");
         servo_base = hardwareMap.get(Servo.class, "servoBase");
+
+        redLED = hardwareMap.get(DigitalChannel.class, "red");
+        greenLED = hardwareMap.get(DigitalChannel.class, "green");
 
         controller_t = new PIDController(pt, it, dt);
         controller_c = new PIDController(pt, it, dt);
@@ -336,6 +342,18 @@ public class SampleMecanumDrive extends MecanumDrive {
     }
     public int getClimberPosition(){
         return motor_climber.getCurrentPosition();
+    }
+    public void turnGreen(){
+        greenLED.setState(true);
+        redLED.setState(false);
+    }
+    public void turnRed(){
+        greenLED.setState(false);
+        redLED.setState(true);
+    }
+    public void setLedMode(){
+        redLED.setMode(DigitalChannel.Mode.OUTPUT);
+        greenLED.setMode(DigitalChannel.Mode.OUTPUT);
     }
 
     public void setServoCaja(double pos){
