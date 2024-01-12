@@ -13,6 +13,8 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 @TeleOp(name = "TeleOpCCM")
 public class TeleOpFieldCentric extends LinearOpMode {
     public static int target = 0;
+    public static double pos_caja = .35;
+    public static double pos_base = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -81,21 +83,34 @@ public class TeleOpFieldCentric extends LinearOpMode {
                 //tercera linea
                 target = 3000;
             }
+            if(gamepad2.right_bumper)
+                target += 100;
+            if(gamepad2.left_bumper)
+                target -= 100;
 
             //Intake (Maybe use bumpers?)
             double intakePower = Range.clip(gamepad2.right_stick_y, -1, 1);
             drive.setIntakePower(intakePower);
 
             //Outake
-            if(gamepad2.b)
-                drive.setServoBase(.5);
-            if(gamepad2.x)
+            //Poner en posicion de subida, faltan valores reales
+            if(gamepad2.dpad_up) {
                 drive.setServoBase(1);
-            if(gamepad2.y)
-                drive.setServoBase(-.5);
-            if(gamepad2.a)
-                drive.setServoBase(-1);
-
+                drive.setServoCaja(.3);
+                drive.setServoBase(0);
+                drive.setServoCaja(.58);
+            }
+            //Poner en posicion de bajada, faltan valores reales
+            if(gamepad2.dpad_down) {
+                drive.setServoBase(.7);
+                drive.setServoCaja(.3);
+                drive.setServoBase(1);
+                drive.setServoCaja(.8);
+            }
+            //Dejar caer los hexes
+            if(gamepad2.dpad_right){
+                drive.setServoCaja(0);
+            }
             //Climber (to do)
 
 
