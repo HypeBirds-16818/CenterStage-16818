@@ -23,6 +23,7 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
@@ -78,11 +79,12 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     private PIDController controller_t;
     private final double pt = 0.008, it = 0, dt = 0.0001, ft = 0.1;
-    private static int target = 0;
     private final double ticks_in_degree = 537.7;
     private DcMotorEx linear_slide, intake_motor;
 
-    private Servo servo_base, servo_caja;
+    private Servo servo_base, servo_caja, servo_avion;
+    private DigitalChannel redLED;
+    private DigitalChannel greenLED;
 
     public enum intakeState  {
         IDLE, TAKING, RAISING1, RAISING2, TURNING, OPENING, TURNINGBACK, FALLING1, FALLING2
@@ -126,6 +128,9 @@ public class SampleMecanumDrive extends MecanumDrive {
 
         servo_caja = hardwareMap.get(Servo.class, "servoCaja");
         servo_base = hardwareMap.get(Servo.class, "servoBase");
+
+        redLED = hardwareMap.get(DigitalChannel.class, "red");
+        greenLED = hardwareMap.get(DigitalChannel.class, "green");
 
         controller_t = new PIDController(pt, it, dt);
 
@@ -247,6 +252,18 @@ public class SampleMecanumDrive extends MecanumDrive {
     public void setSlideMode(DcMotor.RunMode runMode) {
             linear_slide.setMode(runMode);
     }
+    public void setLedMode(){
+        redLED.setMode(DigitalChannel.Mode.OUTPUT);
+        greenLED.setMode(DigitalChannel.Mode.OUTPUT);
+    }
+    public void turnRed(){
+        greenLED.setState(false);
+        redLED.setState(true);
+    }
+    public void turnGreen(){
+        redLED.setState(false);
+        greenLED.setState(true);
+    }
 
 
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior zeroPowerBehavior) {
@@ -332,6 +349,8 @@ public class SampleMecanumDrive extends MecanumDrive {
     public void setServoCaja(double pos){
         servo_caja.setPosition(pos);
     }
+
+    public void setServoAvion(double pos) {servo_avion.setPosition(pos); }
     @Override
     public double getRawExternalHeading() {
         return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);

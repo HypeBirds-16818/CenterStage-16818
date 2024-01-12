@@ -13,8 +13,7 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 @TeleOp(name = "TeleOpCCM")
 public class TeleOpFieldCentric extends LinearOpMode {
     public static int target = 0;
-    public static double pos_caja = .35;
-    public static double pos_base = 0;
+    public static boolean launchPlane = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -32,6 +31,8 @@ public class TeleOpFieldCentric extends LinearOpMode {
         drive.setSlideMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         waitForStart();
+
+        drive.setLedMode();
 
         if (isStopRequested()) return;
 
@@ -69,6 +70,21 @@ public class TeleOpFieldCentric extends LinearOpMode {
             if(gamepad1.dpad_down)
                 drive.setMotorPowers(-.2, -.2, -.2, -.2);
 
+            //Lanzar avion
+            if(launchPlane == false){
+                drive.turnRed();
+            } else if (launchPlane) {
+                drive.turnGreen();
+            }
+
+            if(gamepad1.right_bumper){
+                if(launchPlane == false){
+                    launchPlane = true;
+                } else if (launchPlane) {
+                    drive.setServoAvion(1);
+                }
+            }
+
             //Elevador
             drive.getPID(target);
             if(gamepad2.a){
@@ -88,28 +104,27 @@ public class TeleOpFieldCentric extends LinearOpMode {
             if(gamepad2.left_bumper)
                 target -= 100;
 
-            //Intake (Maybe use bumpers?)
+            //Intake
             double intakePower = Range.clip(gamepad2.right_stick_y, -1, 1);
             drive.setIntakePower(intakePower);
 
             //Outake
             //Poner en posicion de subida, faltan valores reales
             if(gamepad2.dpad_up) {
-                drive.setServoBase(1);
-                drive.setServoCaja(.3);
-                drive.setServoBase(0);
-                drive.setServoCaja(.58);
+                drive.setServoCaja(.4);
+                drive.setServoBase(.2);
+                drive.setServoCaja(.5);
             }
             //Poner en posicion de bajada, faltan valores reales
             if(gamepad2.dpad_down) {
-                drive.setServoBase(.7);
-                drive.setServoCaja(.3);
-                drive.setServoBase(1);
-                drive.setServoCaja(.8);
+                drive.setServoBase(.2);
+                drive.setServoCaja(.36);
+                drive.setServoBase(.4);
+                drive.setServoCaja(.05);
             }
             //Dejar caer los hexes
             if(gamepad2.dpad_right){
-                drive.setServoCaja(0);
+                drive.setServoCaja(.80);
             }
             //Climber (to do)
 
