@@ -76,11 +76,12 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     private DcMotorEx leftFront, leftRear, rightRear, rightFront;
 
-    private PIDController controller_t;
+    private PIDController controller_t, controller_c;
     private final double pt = 0.008, it = 0, dt = 0.0001, ft = 0.1;
     private static int target = 0;
     private final double ticks_in_degree = 537.7;
-    private DcMotorEx linear_slide, intake_motor;
+    private final double ticks_in_degree_c = 537.7;
+    private DcMotorEx linear_slide, intake_motor, motor_climber;
 
     private Servo servo_base, servo_caja;
 
@@ -123,11 +124,13 @@ public class SampleMecanumDrive extends MecanumDrive {
 
         linear_slide = hardwareMap.get(DcMotorEx.class, "linearSlide");
         intake_motor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
+        motor_climber = hardwareMap.get(DcMotorEx.class, "motorClimber");
 
         servo_caja = hardwareMap.get(Servo.class, "servoCaja");
         servo_base = hardwareMap.get(Servo.class, "servoBase");
 
         controller_t = new PIDController(pt, it, dt);
+        controller_c = new PIDController(pt, it, dt);
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront, linear_slide, intake_motor);
 
@@ -328,6 +331,12 @@ public class SampleMecanumDrive extends MecanumDrive {
     public void setServoBase(double pos){
         servo_base.setPosition(pos);
     }
+    public void setClimberPower(double pow){
+        motor_climber.setPower(pow);
+    }
+    public int getClimberPosition(){
+        return motor_climber.getCurrentPosition();
+    }
 
     public void setServoCaja(double pos){
         servo_caja.setPosition(pos);
@@ -364,4 +373,14 @@ public class SampleMecanumDrive extends MecanumDrive {
         linear_slide.setPower(power);
     }
 
+    public void getPIDClimber(int target){
+        controller_c.setPID(pt, it, dt);
+        int topPos = motor_climber.getCurrentPosition();
+        double pid = controller_c.calculate(topPos, target);
+        double ff = Math.cos(Math.toRadians(target / ticks_in_degree_c)) * ft;
+
+        double power = pid + ff;
+
+        motor_climber.setPower(power);
+    }
 }

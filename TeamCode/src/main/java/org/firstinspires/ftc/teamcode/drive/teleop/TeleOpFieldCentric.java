@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 @TeleOp(name = "TeleOpCCM")
 public class TeleOpFieldCentric extends LinearOpMode {
     public static int target = 0;
+    public static boolean lockClimber = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -56,6 +57,30 @@ public class TeleOpFieldCentric extends LinearOpMode {
                             -gamepad1.right_stick_x
                     )
             );
+
+            if(gamepad1.a){
+                //Turn 180°
+            }
+
+            //Climber
+            if(gamepad1.right_bumper){
+                drive.setClimberPower(1);
+            }
+            if(gamepad1.left_bumper){
+                drive.setClimberPower(-1);
+            }
+            if(gamepad1.b){
+                if(lockClimber == false){
+                    lockClimber = true;
+                }
+                else {
+                    lockClimber = false;
+                }
+            }
+            if(lockClimber = true){
+                drive.getPIDClimber(drive.getClimberPosition());
+            }
+
 
             //Small movement
             if(gamepad1.dpad_left)
