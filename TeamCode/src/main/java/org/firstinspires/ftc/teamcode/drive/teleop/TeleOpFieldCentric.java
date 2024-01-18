@@ -32,7 +32,6 @@ public class TeleOpFieldCentric extends LinearOpMode {
 
         waitForStart();
 
-        drive.setLedMode();
 
         if (isStopRequested()) return;
 
@@ -71,11 +70,6 @@ public class TeleOpFieldCentric extends LinearOpMode {
                 drive.setMotorPowers(-.2, -.2, -.2, -.2);
 
             //Lanzar avion
-            if(launchPlane == false){
-                drive.turnRed();
-            } else if (launchPlane) {
-                drive.turnGreen();
-            }
 
             if(gamepad1.right_bumper){
                 if(launchPlane == false){

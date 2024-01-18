@@ -129,8 +129,6 @@ public class SampleMecanumDrive extends MecanumDrive {
         servo_caja = hardwareMap.get(Servo.class, "servoCaja");
         servo_base = hardwareMap.get(Servo.class, "servoBase");
 
-        redLED = hardwareMap.get(DigitalChannel.class, "red");
-        greenLED = hardwareMap.get(DigitalChannel.class, "green");
 
         controller_t = new PIDController(pt, it, dt);
 
@@ -252,18 +250,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     public void setSlideMode(DcMotor.RunMode runMode) {
             linear_slide.setMode(runMode);
     }
-    public void setLedMode(){
-        redLED.setMode(DigitalChannel.Mode.OUTPUT);
-        greenLED.setMode(DigitalChannel.Mode.OUTPUT);
-    }
-    public void turnRed(){
-        greenLED.setState(false);
-        redLED.setState(true);
-    }
-    public void turnGreen(){
-        redLED.setState(false);
-        greenLED.setState(true);
-    }
+
 
 
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior zeroPowerBehavior) {
