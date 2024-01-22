@@ -128,6 +128,7 @@ public class SampleMecanumDrive extends MecanumDrive {
 
         servo_caja = hardwareMap.get(Servo.class, "servoCaja");
         servo_base = hardwareMap.get(Servo.class, "servoBase");
+        servo_avion = hardwareMap.get(Servo.class, "servoAvion");
 
 
         controller_t = new PIDController(pt, it, dt);

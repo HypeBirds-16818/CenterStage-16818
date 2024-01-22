@@ -13,7 +13,15 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 @TeleOp(name = "TeleOpCCM")
 public class TeleOpFieldCentric extends LinearOpMode {
     public static int target = 0;
-    public static boolean launchPlane = false;
+
+    public enum OuttakeState{
+        BASE,
+        UP,
+        DROP
+    };
+
+    OuttakeState outtakeState = OuttakeState.BASE;
+    //public static boolean launchPlane = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -69,14 +77,14 @@ public class TeleOpFieldCentric extends LinearOpMode {
             if(gamepad1.dpad_down)
                 drive.setMotorPowers(-.2, -.2, -.2, -.2);
 
+<<<<<<< Updated upstream
             //Lanzar avion
+=======
+>>>>>>> Stashed changes
 
             if(gamepad1.right_bumper){
-                if(launchPlane == false){
-                    launchPlane = true;
-                } else if (launchPlane) {
-                    drive.setServoAvion(1);
-                }
+                drive.setServoAvion(0.75);
+
             }
 
             //Elevador
@@ -89,7 +97,7 @@ public class TeleOpFieldCentric extends LinearOpMode {
                 //segunda linea
                 target = 2300;
             }
-            if(gamepad2.x){
+            if(gamepad2.y){
                 //tercera linea
                 target = 3000;
             }
@@ -113,8 +121,8 @@ public class TeleOpFieldCentric extends LinearOpMode {
             if(gamepad2.dpad_down) {
                 drive.setServoBase(.2);
                 drive.setServoCaja(.36);
-                drive.setServoBase(.4);
-                drive.setServoCaja(.05);
+                drive.setServoBase(.25);
+                drive.setServoCaja(0);
             }
             //Dejar caer los hexes
             if(gamepad2.dpad_right){
