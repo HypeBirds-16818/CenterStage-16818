@@ -66,6 +66,7 @@ public class TeleOpFieldCentric extends LinearOpMode {
                             -gamepad1.right_stick_x
                     )
             );
+            drive.setServoBase(.26);
 
             //Small movement
             if(gamepad1.dpad_left)
@@ -77,14 +78,10 @@ public class TeleOpFieldCentric extends LinearOpMode {
             if(gamepad1.dpad_down)
                 drive.setMotorPowers(-.2, -.2, -.2, -.2);
 
-<<<<<<< Updated upstream
-            //Lanzar avion
-=======
->>>>>>> Stashed changes
+
 
             if(gamepad1.right_bumper){
                 drive.setServoAvion(0.75);
-
             }
 
             //Elevador
@@ -111,25 +108,17 @@ public class TeleOpFieldCentric extends LinearOpMode {
             drive.setIntakePower(intakePower);
 
             //Outake
-            //Poner en posicion de subida, faltan valores reales
+            //Poner en posicion de subida
             if(gamepad2.dpad_up) {
-                drive.setServoCaja(.4);
-                drive.setServoBase(.2);
-                drive.setServoCaja(.5);
+                drive.setServoCaja(.3);
             }
             //Poner en posicion de bajada, faltan valores reales
             if(gamepad2.dpad_down) {
-                drive.setServoBase(.2);
-                drive.setServoCaja(.36);
-                drive.setServoBase(.25);
-                drive.setServoCaja(0);
+                drive.setServoCaja(.4);
             }
-            //Dejar caer los hexes
-            if(gamepad2.dpad_right){
-                drive.setServoCaja(.80);
-            }
-            //Climber (to do)
 
+
+            //Climber (to do)
 
             // Update everything. Odometry. Etc.
             drive.update();
