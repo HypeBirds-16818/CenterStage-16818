@@ -23,7 +23,7 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
@@ -32,6 +32,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceRunner;
@@ -80,11 +81,11 @@ public class SampleMecanumDrive extends MecanumDrive {
     private PIDController controller_t;
     private final double pt = 0.008, it = 0, dt = 0.0001, ft = 0.1;
     private final double ticks_in_degree = 537.7;
-    private DcMotorEx linear_slide, intake_motor;
+    private DcMotorEx linear_slide, intake_motor, banda_motor;
 
-    private Servo servo_base, servo_caja, servo_avion;
-    private DigitalChannel redLED;
-    private DigitalChannel greenLED;
+    private Servo servo_base, servo_caja, servo_avion, servo_elevador;
+
+    private DistanceSensor sensorDistancia;
 
     public enum intakeState  {
         IDLE, TAKING, RAISING1, RAISING2, TURNING, OPENING, TURNINGBACK, FALLING1, FALLING2
@@ -125,15 +126,19 @@ public class SampleMecanumDrive extends MecanumDrive {
 
         linear_slide = hardwareMap.get(DcMotorEx.class, "linearSlide");
         intake_motor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
+        banda_motor =  hardwareMap.get(DcMotorEx.class, "bandaMotor");
 
         servo_caja = hardwareMap.get(Servo.class, "servoCaja");
         servo_base = hardwareMap.get(Servo.class, "servoBase");
         servo_avion = hardwareMap.get(Servo.class, "servoAvion");
+        servo_elevador = hardwareMap.get(Servo.class, "servoIntake");
+
+        sensorDistancia = hardwareMap.get(DistanceSensor.class, "sensorDistancia");
 
 
         controller_t = new PIDController(pt, it, dt);
 
-        motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront, linear_slide, intake_motor);
+        motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront, linear_slide, intake_motor,banda_motor);
 
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
@@ -154,6 +159,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         // TODO: reverse any motors using DcMotor.setDirection()
         rightFront.setDirection(DcMotorEx.Direction.REVERSE);
         leftRear.setDirection(DcMotorEx.Direction.REVERSE);
+        intake_motor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         List<Integer> lastTrackingEncPositions = new ArrayList<>();
         List<Integer> lastTrackingEncVels = new ArrayList<>();
@@ -326,9 +332,9 @@ public class SampleMecanumDrive extends MecanumDrive {
         rightFront.setPower(v3);
     }
 
-    public void setIntakePower(double v) {
-        intake_motor.setPower(v);
-    }
+    public void setIntakePower(double v) { intake_motor.setPower(v); }
+
+    public void setBandaPower(double v) { banda_motor.setPower(v);}
 
     public void setServoBase(double pos){
         servo_base.setPosition(pos);
@@ -339,6 +345,9 @@ public class SampleMecanumDrive extends MecanumDrive {
     }
 
     public void setServoAvion(double pos) {servo_avion.setPosition(pos); }
+
+    public void setServoElevador(double pos) {servo_elevador.setPosition(pos); }
+    public double getDistanceIntake() {return sensorDistancia.getDistance(DistanceUnit.CM);}
     @Override
     public double getRawExternalHeading() {
         return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);

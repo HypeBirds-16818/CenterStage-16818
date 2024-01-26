@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 public class RojoBackboard extends LinearOpMode {
     public void runOpMode() throws InterruptedException{
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        Pose2d start_pose = new Pose2d(11.47, -62.65, Math.toRadians(90.00));
+        Pose2d start_pose = new Pose2d();
         drive.setPoseEstimate(start_pose);
 
         // Medio y estacionar

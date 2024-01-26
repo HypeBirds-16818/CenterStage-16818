@@ -29,6 +29,8 @@
 
 package org.firstinspires.ftc.robotcontroller.external.samples;
 
+import android.util.Size;
+
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -62,10 +64,10 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
      */
     private VisionPortal visionPortal;
 
-    private static final String TFOD_MODEL_ASSET = "CenterStage.tflite";
+    private static final String TFOD_MODEL_ASSET = "ModeloSoloPajaro.tflite";
 
     private static final String[] LABELS = {
-           "Pixel",
+           "PAJARO"
     };
     @Override
     public void runOpMode() {
@@ -135,7 +137,8 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
         }
 
         // Choose a camera resolution. Not all cameras support all resolutions.
-        //builder.setCameraResolution(new Size(640, 480));
+        builder.setCameraResolution(new Size(1920, 1080));
+
 
         // Enable the RC preview (LiveView).  Set "false" to omit camera monitoring.
         //builder.enableCameraMonitoring(true);
@@ -166,6 +169,7 @@ public class ConceptTensorFlowObjectDetection extends LinearOpMode {
      * Function to add telemetry about TensorFlow Object Detection (TFOD) recognitions.
      */
     private void telemetryTfod() {
+
 
         List<Recognition> currentRecognitions = tfod.getRecognitions();
         telemetry.addData("# Objects Detected", currentRecognitions.size());

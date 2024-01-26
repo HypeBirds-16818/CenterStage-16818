@@ -4,10 +4,12 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.drive.teleop.SavePose;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
+@Disabled
 @Autonomous(name = "Azul")
 public class AzulBackboard extends LinearOpMode {
     public void runOpMode() throws InterruptedException{
@@ -15,7 +17,7 @@ public class AzulBackboard extends LinearOpMode {
         Pose2d start_pose = new Pose2d(12.09, 61.31, Math.toRadians(270.00));
         drive.setPoseEstimate(start_pose);
 
-        int x = 0;
+        int x = 300;
 
 
         // Medio y estacionar
@@ -39,6 +41,7 @@ public class AzulBackboard extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0, ()->drive.getPID(100))
                 .UNSTABLE_addTemporalMarkerOffset(1, () -> drive.setServoCaja(.4))
                 .UNSTABLE_addTemporalMarkerOffset(2, ()->drive.getPID(0))
+                .waitSeconds(7)
                 .build();
 
         TrajectorySequence Azul_Medio = drive.trajectorySequenceBuilder(start_pose)
@@ -51,6 +54,7 @@ public class AzulBackboard extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0, ()->drive.getPID(100))
                 .UNSTABLE_addTemporalMarkerOffset(1, () -> drive.setServoCaja(.4))
                 .UNSTABLE_addTemporalMarkerOffset(2, ()->drive.getPID(0))
+                .waitSeconds(7)
                 .build();
 
         TrajectorySequence Azul_Izquierda = drive.trajectorySequenceBuilder(start_pose)
@@ -63,28 +67,36 @@ public class AzulBackboard extends LinearOpMode {
                 .UNSTABLE_addTemporalMarkerOffset(0, ()->drive.getPID(100))
                 .UNSTABLE_addTemporalMarkerOffset(1, () -> drive.setServoCaja(.4))
                 .UNSTABLE_addTemporalMarkerOffset(2, ()->drive.getPID(0))
+                .waitSeconds(6)
                 .build();
 
-        drive.setServoCaja(.3);
+        TrajectorySequence af = drive.trajectorySequenceBuilder(start_pose)
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.getPID(100))
+                .UNSTABLE_addTemporalMarkerOffset(1, () -> drive.setServoCaja(.4))
+                .UNSTABLE_addTemporalMarkerOffset(3, ()->drive.getPID(0))
+                .waitSeconds(6)
+                .build();
 
         waitForStart();
 
         if(isStopRequested()) return;
 
-        if(x<213)
-        {
-            drive.followTrajectorySequence(Azul_Izquierda);
-        }
-        if(x>426)
-        {
-            drive.followTrajectorySequence(Azul_Derecha);
-        }
-        else
-        {
-            drive.followTrajectorySequence(Azul_Medio);
-        }
+        drive.setServoBase(.26);
 
+//        if(x<213)
+//        {
+//            drive.followTrajectorySequence(Azul_Izquierda);
+//        }
+//        if(x>426)
+//        {
+//            drive.followTrajectorySequence(Azul_Derecha);
+//        }
+//        else
+//        {
+//            drive.followTrajectorySequence(Azul_Medio);
+//        }
 
+        drive.followTrajectorySequence(af);
 
         SavePose.currentPose = drive.getPoseEstimate();
     }
