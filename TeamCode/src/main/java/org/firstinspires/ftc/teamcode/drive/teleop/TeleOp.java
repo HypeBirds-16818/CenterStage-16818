@@ -11,15 +11,6 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOpFerreria")
 public class TeleOp extends LinearOpMode {
     public static int target = 0;
-    public static double distance;
-
-    public enum OuttakeState{
-        BASE,
-        UP,
-        DROP
-    };
-
-    OuttakeState outtakeState = OuttakeState.BASE;
     //public static boolean launchPlane = false;
 
     @Override
@@ -41,12 +32,9 @@ public class TeleOp extends LinearOpMode {
         drive.setServoBase(.26);
         drive.setServoCaja(.3);
 
-
-
         if (isStopRequested()) return;
 
         while (opModeIsActive() && !isStopRequested()) {
-            distance = drive.getDistanceIntake();
 
 
             // Movimiento de chasis
@@ -58,8 +46,6 @@ public class TeleOp extends LinearOpMode {
                         )
                 );
 
-                // Update everything. Odometry. Etc.
-                drive.update();
 
             //Small movement
             if(gamepad1.dpad_left)
@@ -86,12 +72,12 @@ public class TeleOp extends LinearOpMode {
             if(gamepad2.b){
                 //segunda linea
                 target = 1800;
-                drive.setServoElevador(.7);
+                //drive.setServoElevador(.7);
             }
             if(gamepad2.y){
                 //tercera linea
                 target = 2500;
-                drive.setServoElevador(.7);
+                //drive.setServoElevador(.7);
             }
             if(gamepad2.right_bumper)
                 target += 100;
@@ -109,7 +95,7 @@ public class TeleOp extends LinearOpMode {
 //                drive.setIntakePower(0);
 //            }
             drive.setIntakePower(intakePower);
-            drive.setBandaPower(intakePower );
+            drive.setBandaPower(intakePower);
 
 
             //Outake

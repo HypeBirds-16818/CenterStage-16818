@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.drive.teleop;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -12,6 +13,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 @Config
+@Disabled
 @TeleOp(name = "Integrated Test")
 public class test_integration extends LinearOpMode {
     SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap); // Creacion de drive

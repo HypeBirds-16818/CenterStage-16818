@@ -50,6 +50,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 @Config
+@Disabled
 @TeleOp(name = "Concept: Scan Servo")
 public class ServoPos extends LinearOpMode {
 
