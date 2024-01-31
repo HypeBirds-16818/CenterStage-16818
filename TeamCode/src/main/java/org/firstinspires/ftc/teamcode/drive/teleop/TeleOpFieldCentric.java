@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.drive.teleop;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -10,10 +11,20 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
+@Disabled
 @TeleOp(name = "TeleOpCCM")
 public class TeleOpFieldCentric extends LinearOpMode {
     public static int target = 0;
     public static boolean lockClimber = false;
+
+    public enum OuttakeState{
+        BASE,
+        UP,
+        DROP
+    };
+
+    OuttakeState outtakeState = OuttakeState.BASE;
+    //public static boolean launchPlane = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -31,6 +42,9 @@ public class TeleOpFieldCentric extends LinearOpMode {
         drive.setSlideMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         waitForStart();
+        drive.setServoBase(.26);
+        drive.setServoCaja(.3);
+
 
         if (isStopRequested()) return;
 
@@ -92,6 +106,12 @@ public class TeleOpFieldCentric extends LinearOpMode {
             if(gamepad1.dpad_down)
                 drive.setMotorPowers(-.2, -.2, -.2, -.2);
 
+
+
+            if(gamepad1.right_bumper){
+                drive.setServoAvion(0.75);
+            }
+
             //Elevador
             drive.getPID(target);
             if(gamepad2.a){
@@ -100,29 +120,43 @@ public class TeleOpFieldCentric extends LinearOpMode {
             }
             if(gamepad2.b){
                 //segunda linea
-                target = 2300;
+                target = 1800;
             }
-            if(gamepad2.x){
+            if(gamepad2.y){
                 //tercera linea
-                target = 3000;
+                target = 2500;
             }
+            if(gamepad2.right_bumper)
+                target += 100;
+            if(gamepad2.left_bumper)
+                target -= 100;
 
-            //Intake (Maybe use bumpers?)
+            //Intake
             double intakePower = Range.clip(gamepad2.right_stick_y, -1, 1);
             drive.setIntakePower(intakePower);
 
             //Outake
-            if(gamepad2.b)
-                drive.setServoBase(.5);
-            if(gamepad2.x)
-                drive.setServoBase(1);
-            if(gamepad2.y)
-                drive.setServoBase(-.5);
-            if(gamepad2.a)
-                drive.setServoBase(-1);
+            //Poner en posicion de subida
+            if(gamepad2.dpad_up) {
+                drive.setServoCaja(.3);
+                drive.setServoBase(.26);
+            }
+            //Poner en posicion de bajada, faltan valores reales
+            if(gamepad2.dpad_down) {
+                drive.setServoBase(.35);
+                drive.setServoCaja(.4);
+            }
+            if(gamepad2.dpad_left)
+            {
+                drive.setServoCaja(.4);
+            }
+            if(gamepad2.dpad_right)
+            {
+                drive.setServoBase(.35);
+            }
+
 
             //Climber (to do)
-
 
             // Update everything. Odometry. Etc.
             drive.update();
