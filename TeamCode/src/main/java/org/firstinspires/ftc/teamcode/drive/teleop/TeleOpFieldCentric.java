@@ -11,8 +11,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
-@Disabled
-@TeleOp(name = "TeleOpCCM")
+@TeleOp(name = "Reset encoders")
 public class TeleOpFieldCentric extends LinearOpMode {
     public static int target = 0;
 

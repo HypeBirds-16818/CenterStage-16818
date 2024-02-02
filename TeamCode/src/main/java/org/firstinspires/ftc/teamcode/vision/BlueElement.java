@@ -20,11 +20,11 @@ public class BlueElement extends OpenCvPipeline {
     static final Scalar BLUE = new Scalar(0, 0, 255);
     static final Scalar GREEN = new Scalar(0, 255, 0);
 
-    public static int region1X = 180;
-    public static int region1Y = 180;
+    public static int region1X = 140;
+    public static int region1Y = 220;
 
-    public static int region2X = 500;
-    public static int region2Y = 220;
+    public static int region2X = 440;
+    public static int region2Y = 240;
 
     /*
      * The core values which define the location and size of the sample regions
@@ -225,7 +225,7 @@ public class BlueElement extends OpenCvPipeline {
     /*
      * Call this from the OpMode thread to obtain the latest analysis
      */
-    public int getAnalysis() {
+    public static int getAnalysis() {
         return position;
     }
 

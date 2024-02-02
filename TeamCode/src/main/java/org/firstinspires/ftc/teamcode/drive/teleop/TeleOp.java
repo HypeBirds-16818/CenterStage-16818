@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOpFerreria")
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOpMty")
 public class TeleOp extends LinearOpMode {
     public static int target = 0;
     //public static boolean launchPlane = false;
@@ -26,7 +26,7 @@ public class TeleOp extends LinearOpMode {
         // See AutoTransferPose.java for further details
         drive.setPoseEstimate(SavePose.currentPose);
 
-        drive.setSlideMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //drive.setSlideMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         waitForStart();
         drive.setServoBase(.26);

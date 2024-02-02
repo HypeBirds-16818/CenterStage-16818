@@ -24,7 +24,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 
-@Autonomous(name = "Rojo_async")
+@Autonomous(name = "Rojo Back")
 public class RojoBackboardAsync extends LinearOpMode {
     private OpenCvCamera camera;
     private RedElement redElement;
@@ -42,7 +42,7 @@ public class RojoBackboardAsync extends LinearOpMode {
     }
 
     State currentState = State.IDLE;
-    Pose2d start_pose = new Pose2d(12.19, -67.31, Math.toRadians(90.00));
+    Pose2d start_pose = new Pose2d(15.92, -67.31, Math.toRadians(90.00));
 
     public void runOpMode() throws InterruptedException {
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, webcamName));
@@ -68,48 +68,48 @@ public class RojoBackboardAsync extends LinearOpMode {
         ElapsedTime waitTimer1 = new ElapsedTime();
 
         TrajectorySequence Rojo_Izquierda = drive.trajectorySequenceBuilder(start_pose)
-                .lineTo(new Vector2d(11.25, -44.06))
+                .lineTo(new Vector2d(16, -44.06))
                 .turn(Math.toRadians(90))
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setIntakePower(.4)) // Lower servo
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setIntakePower(0.6)) // Lower servo
                 .waitSeconds(2)
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setIntakePower(0))
                 .waitSeconds(.01)
                 .setReversed(true)
-                .splineTo(new Vector2d(49, -29.5), Math.toRadians(0))
+                .splineTo(new Vector2d(52.6, -31.5), Math.toRadians(0))
                 .build();
 
 
         TrajectorySequence Rojo_Medio = drive.trajectorySequenceBuilder(start_pose)
                 .lineTo(new Vector2d(11.25, -38.06))
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setIntakePower(.4)) // Lower servo
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setIntakePower(.6)) // Lower servo
                 .waitSeconds(2)
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setIntakePower(0))
                 .waitSeconds(.01)
                 .strafeTo(new Vector2d(46.31, -36.00))
                 .turn(Math.toRadians(90))
-                .strafeTo(new Vector2d(49,-44))
+                .strafeTo(new Vector2d(52.6,-39))
                 .build();
 
         TrajectorySequence Rojo_Derecha = drive.trajectorySequenceBuilder(start_pose)
                 .splineTo(new Vector2d(23.81, -53.67), Math.toRadians(87.52))
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setIntakePower(.4)) // Lower servo
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setIntakePower(.6)) // Lower servo
                 .waitSeconds(2)
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setIntakePower(0))
                 .waitSeconds(.01)
                 .setReversed(true)
-                .splineTo(new Vector2d(49.3 , -46.3), Math.toRadians(0))
+                .splineTo(new Vector2d(52 , -48.3), Math.toRadians(0))
                 .build();
 
 
-        TrajectorySequence Rojo_Final = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                .strafeTo(new Vector2d(47, -60))
-                .setReversed(true)
-                .lineTo(new Vector2d(61.88, -61.12))
-                .build();
+//        TrajectorySequence Rojo_Final = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+//                .strafeTo(new Vector2d(47, -60))
+//                .setReversed(true)
+//                .lineTo(new Vector2d(61.88, -61.12))
+//                .build();
 
-        int x = redElement.getAnalysis();
+
         while (!isStarted()) {
-            telemetry.addData("ROTATION: ", redElement.getAnalysis());
+            telemetry.addData("POSICION: ", redElement.getAnalysis());
             telemetry.update();
         }
         waitForStart();
@@ -118,8 +118,8 @@ public class RojoBackboardAsync extends LinearOpMode {
 
 
         currentState = RojoBackboardAsync.State.TRAJECTORY_1;
-        if (x==1) { drive.followTrajectorySequenceAsync(Rojo_Medio); }
-        else if(x==2) { drive.followTrajectorySequenceAsync(Rojo_Derecha); }
+        if (redElement.getAnalysis()==1) { drive.followTrajectorySequenceAsync(Rojo_Medio); }
+        else if(redElement.getAnalysis()==2) { drive.followTrajectorySequenceAsync(Rojo_Derecha); }
         else { drive.followTrajectorySequenceAsync(Rojo_Izquierda); }
 
         while (opModeIsActive() && !isStopRequested()) {
@@ -137,7 +137,7 @@ public class RojoBackboardAsync extends LinearOpMode {
                     }
                     break;
                 case ELEVADOR_SUBIR:
-                    target = 1600;
+                    target = 2200;
                     if (!drive.isBusy()) {
                         currentState = State.WAIT_1;
                         waitTimer1.reset();
@@ -167,11 +167,9 @@ public class RojoBackboardAsync extends LinearOpMode {
                     drive.setServoBase(.26);
                     target = 0;
                     if (!drive.isBusy()) {
-                        currentState = State.ESTACIONAR;
+                        currentState = State.IDLE;
                     }
                     break;
-                case ESTACIONAR:
-                    drive.followTrajectorySequenceAsync(Rojo_Final);
                 case IDLE:
                     break;
             }
