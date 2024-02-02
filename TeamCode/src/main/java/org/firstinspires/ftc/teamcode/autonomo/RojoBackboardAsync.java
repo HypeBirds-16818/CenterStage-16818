@@ -87,7 +87,7 @@ public class RojoBackboardAsync extends LinearOpMode {
                 .waitSeconds(.01)
                 .strafeTo(new Vector2d(46.31, -36.00))
                 .turn(Math.toRadians(90))
-                .strafeTo(new Vector2d(52.6,-39))
+                .strafeTo(new Vector2d(52.6,-45))
                 .build();
 
         TrajectorySequence Rojo_Derecha = drive.trajectorySequenceBuilder(start_pose)
@@ -137,7 +137,7 @@ public class RojoBackboardAsync extends LinearOpMode {
                     }
                     break;
                 case ELEVADOR_SUBIR:
-                    target = 2200;
+                    target = 1600;
                     if (!drive.isBusy()) {
                         currentState = State.WAIT_1;
                         waitTimer1.reset();

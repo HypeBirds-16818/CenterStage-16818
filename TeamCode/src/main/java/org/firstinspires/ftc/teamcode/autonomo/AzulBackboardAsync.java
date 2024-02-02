@@ -76,35 +76,35 @@ public class AzulBackboardAsync extends LinearOpMode {
         ElapsedTime waitTimer1 = new ElapsedTime();
 
         TrajectorySequence Azul_Izquierda = drive.trajectorySequenceBuilder(start_pose)
-                .splineTo(new Vector2d(21.81, 53.67), Math.toRadians(270))
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setIntakePower(.5)) // Lower servo
-                .waitSeconds(3)
+                .splineTo(new Vector2d(19.00, 53.67), Math.toRadians(270))
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setIntakePower(.6)) // Lower servo
+                .waitSeconds(2.5)
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setIntakePower(0))
                 .waitSeconds(.01)
                 .setReversed(true)
-                .splineTo(new Vector2d(49.3 , 46.3), Math.toRadians(0))
+                .splineTo(new Vector2d(47.5 , 46.3), Math.toRadians(0))
                 .build();
 
         TrajectorySequence Azul_Medio = drive.trajectorySequenceBuilder(start_pose)
-                .lineTo(new Vector2d(11.25, 38.06))
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setIntakePower(.5)) // Lower servo
+                .lineTo(new Vector2d(11.25, 39.56))
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setIntakePower(.6)) // Lower servo
                 .waitSeconds(2.5)
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setIntakePower(0))
                 .waitSeconds(.01)
                 .strafeTo(new Vector2d(46.31, 36))
                 .turn(Math.toRadians(-90))
-                .strafeTo(new Vector2d(49,44))
+                .strafeTo(new Vector2d(47.5,44))
                 .build();
 
         TrajectorySequence Azul_Derecha = drive.trajectorySequenceBuilder(start_pose)
                 .lineTo(new Vector2d(12.15, 44.06))
                 .turn(Math.toRadians(-90))
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setIntakePower(.5)) // Lower servo
-                .waitSeconds(1.5)
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setIntakePower(.6)) // Lower servo
+                .waitSeconds(2.5)
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setIntakePower(0))
                 .waitSeconds(.01)
                 .setReversed(true)
-                .splineTo(new Vector2d(49, 31.5), Math.toRadians(0))
+                .splineTo(new Vector2d(47.5, 31.5), Math.toRadians(0))
                 .build();
 
 

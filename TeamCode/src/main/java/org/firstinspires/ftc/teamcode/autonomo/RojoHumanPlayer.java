@@ -80,9 +80,9 @@ public class RojoHumanPlayer extends LinearOpMode {
             waitForStart();
             if (isStopRequested()) return;
 
-            if (x==1) { drive.followTrajectorySequenceAsync(Rojo_Medio); }
-            else if(x==2) { drive.followTrajectorySequenceAsync(Rojo_Derecha); }
-            else { drive.followTrajectorySequenceAsync(Rojo_Izquierda); }
+            if (redElement.getAnalysis()==1) { drive.followTrajectorySequence(Rojo_Medio); }
+            else if(redElement.getAnalysis()==2) { drive.followTrajectorySequence(Rojo_Derecha); }
+            else { drive.followTrajectorySequence(Rojo_Izquierda); }
     }
 
 }

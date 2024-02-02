@@ -23,7 +23,7 @@ public class BlueElement extends OpenCvPipeline {
     public static int region1X = 140;
     public static int region1Y = 220;
 
-    public static int region2X = 440;
+    public static int region2X = 490;
     public static int region2Y = 240;
 
     /*

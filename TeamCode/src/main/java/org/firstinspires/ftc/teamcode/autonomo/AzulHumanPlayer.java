@@ -78,9 +78,9 @@ public class AzulHumanPlayer extends LinearOpMode {
         }
         waitForStart();
         if (isStopRequested()) return;
-        if (x==1) { drive.followTrajectorySequenceAsync(Azul_Medio); }
-        else if(x==2) { drive.followTrajectorySequenceAsync(Azul_Derecha); }
-        else { drive.followTrajectorySequenceAsync(Azul_Izquierda); }
+        if (blueElement.getAnalysis()==1) { drive.followTrajectorySequence(Azul_Medio); }
+        else if(blueElement.getAnalysis()==2) { drive.followTrajectorySequence(Azul_Derecha); }
+        else { drive.followTrajectorySequence(Azul_Izquierda); }
 
     }
 
