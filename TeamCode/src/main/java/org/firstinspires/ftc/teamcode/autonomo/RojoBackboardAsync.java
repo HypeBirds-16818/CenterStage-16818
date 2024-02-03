@@ -101,11 +101,23 @@ public class RojoBackboardAsync extends LinearOpMode {
                 .build();
 
 
-//        TrajectorySequence Rojo_Final = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-//                .strafeTo(new Vector2d(47, -60))
-//                .setReversed(true)
-//                .lineTo(new Vector2d(61.88, -61.12))
-//                .build();
+        TrajectorySequence Rojo_Final_Izq = drive.trajectorySequenceBuilder(Rojo_Izquierda.end())
+                .strafeTo(new Vector2d(47, -60))
+                .setReversed(true)
+                .lineTo(new Vector2d(61.88, -61.12))
+                .build();
+
+        TrajectorySequence Rojo_Final_Mid = drive.trajectorySequenceBuilder(Rojo_Medio.end())
+                .strafeTo(new Vector2d(47, -60))
+                .setReversed(true)
+                .lineTo(new Vector2d(61.88, -61.12))
+                .build();
+
+        TrajectorySequence Rojo_Final_Der = drive.trajectorySequenceBuilder(Rojo_Medio.end())
+                .strafeTo(new Vector2d(47, -60))
+                .setReversed(true)
+                .lineTo(new Vector2d(61.88, -61.12))
+                .build();
 
 
         while (!isStarted()) {
@@ -115,12 +127,13 @@ public class RojoBackboardAsync extends LinearOpMode {
         waitForStart();
 
         if (isStopRequested()) return;
+        int y;
 
 
         currentState = RojoBackboardAsync.State.TRAJECTORY_1;
-        if (redElement.getAnalysis()==1) { drive.followTrajectorySequenceAsync(Rojo_Medio); }
-        else if(redElement.getAnalysis()==2) { drive.followTrajectorySequenceAsync(Rojo_Derecha); }
-        else { drive.followTrajectorySequenceAsync(Rojo_Izquierda); }
+        if (redElement.getAnalysis()==1) { drive.followTrajectorySequenceAsync(Rojo_Medio); y=1;}
+        else if(redElement.getAnalysis()==2) { drive.followTrajectorySequenceAsync(Rojo_Derecha); y=2; }
+        else { drive.followTrajectorySequenceAsync(Rojo_Izquierda); y=3;}
 
         while (opModeIsActive() && !isStopRequested()) {
             // Our state machine logic
@@ -166,6 +179,14 @@ public class RojoBackboardAsync extends LinearOpMode {
                 case ELEVADOR_BAJAR:
                     drive.setServoBase(.26);
                     target = 0;
+                    if (!drive.isBusy()) {
+                        currentState = State.ESTACIONAR;
+                        if(y==1){drive.followTrajectorySequenceAsync(Rojo_Final_Mid);}
+                        if(y==2){drive.followTrajectorySequenceAsync(Rojo_Final_Der);}
+                        if(y==3){drive.followTrajectorySequenceAsync(Rojo_Final_Izq);}
+                    }
+                    break;
+                case ESTACIONAR:
                     if (!drive.isBusy()) {
                         currentState = State.IDLE;
                     }
