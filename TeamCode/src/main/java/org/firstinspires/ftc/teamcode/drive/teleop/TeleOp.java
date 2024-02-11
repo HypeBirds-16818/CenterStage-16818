@@ -11,7 +11,6 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOpMty")
 public class TeleOp extends LinearOpMode {
     public static int target = 0;
-    //public static boolean launchPlane = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -29,7 +28,7 @@ public class TeleOp extends LinearOpMode {
         //drive.setSlideMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         waitForStart();
-        drive.setServoBase(.26);
+        drive.setServoBase(.95);
         drive.setServoCaja(.3);
 
         if (isStopRequested()) return;
@@ -59,9 +58,29 @@ public class TeleOp extends LinearOpMode {
 
 
 
-            if(gamepad1.right_bumper){
+            if(gamepad1.a){
                 drive.setServoAvion(0);
             }
+
+            double poderElevador = 0;
+            if(gamepad1.right_bumper)
+            {
+                if(drive.getElevadorPos() < 14800)
+                    poderElevador = 1;
+                else
+                    poderElevador = 0;
+            }
+            if(gamepad1.left_bumper)
+            {
+                if(drive.getElevadorPos() > 300)
+                    poderElevador = -1;
+                else
+                    poderElevador=0;
+            }
+            drive.setElevadorPower(poderElevador);
+
+
+
 
             //Elevador
             drive.getPID(target);
@@ -71,7 +90,7 @@ public class TeleOp extends LinearOpMode {
             }
             if(gamepad2.b){
                 //segunda linea
-                target = 1800;
+                target = 1600;
                 //drive.setServoElevador(.7);
             }
             if(gamepad2.y){
@@ -86,27 +105,18 @@ public class TeleOp extends LinearOpMode {
 
             //Intake
             double intakePower = Range.clip(gamepad2.right_stick_y, -1, 1);
-//            if (distance > 10)
-//            {
-//                drive.setIntakePower(intakePower);
-//            }
-//            else
-//            {
-//                drive.setIntakePower(0);
-//            }
             drive.setIntakePower(intakePower);
-            drive.setBandaPower(intakePower);
 
 
             //Outake
             //Poner en posicion de subida
             if(gamepad2.dpad_up) {
                 drive.setServoCaja(.3);
-                drive.setServoBase(.26);
+                drive.setServoBase(.95);
             }
             //Poner en posicion de bajada, faltan valores reales
             if(gamepad2.dpad_down) {
-                drive.setServoBase(.35);
+                drive.setServoBase(.62);
                 drive.setServoCaja(.4);
             }
             if(gamepad2.dpad_left)

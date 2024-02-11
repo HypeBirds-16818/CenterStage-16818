@@ -10,8 +10,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.Range;
 
-@Config
-@Disabled
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+
+
 @TeleOp(name = "testtop")
 public class test_teleoptop extends LinearOpMode {
     private PIDController controller;
@@ -27,46 +28,25 @@ public class test_teleoptop extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
 
-
-        controller = new PIDController(p, i, d);
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        top_motor_1 = hardwareMap.get(DcMotorEx.class, "linearSlide");
-        top_motor_2 = hardwareMap.get(DcMotorEx.class, "intakeMotor");
-
-        top_motor_1.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
 
         waitForStart();
 
         while (opModeIsActive() && !isStopRequested()) {
-            controller.setPID(p, i, d);
-            int basePos = top_motor_1.getCurrentPosition();
-            double pid = controller.calculate(basePos, target);
-            double ff = Math.cos(Math.toRadians(target / ticks_in_degree)) * f;
-
-            double power = pid + ff;
-
-            top_motor_1.setPower(power);
-
-            telemetry.addData("base position: ", basePos);
-            telemetry.addData("target position: ", target);
+            double poder = 0;
+            if (gamepad1.right_bumper)
+            {
+                poder = 1;
+            }
+            if(gamepad1.left_bumper)
+            {
+                poder = -1;
+            }
+            drive.setElevadorPower(poder);
+            telemetry.addData("Posicion",drive.getElevadorPos());
             telemetry.update();
 
-            double poder = Range.clip(gamepad1.left_stick_y, -1, 1);
-            top_motor_1.setPower(poder);
-
-            double poder2 = Range.clip(gamepad1.right_stick_y, -1, 1);
-            top_motor_2.setPower(poder2);
-
-            if(gamepad1.a){
-                target = 0;
-            }
-            if(gamepad1.b){
-                target = 2300;
-            }
-            if(gamepad1.x){
-                target = 3000;
-            }
         }
 
 

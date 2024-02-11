@@ -81,9 +81,9 @@ public class SampleMecanumDrive extends MecanumDrive {
     private PIDController controller_t;
     private final double pt = 0.008, it = 0, dt = 0.0001, ft = 0.1;
     private final double ticks_in_degree = 537.7;
-    private DcMotorEx linear_slide, intake_motor, banda_motor;
+    private DcMotorEx linear_slide, intake_motor, elevador_motor;
 
-    private Servo servo_base, servo_caja, servo_avion, servo_elevador;
+    private Servo servo_base, servo_caja, servo_avion, servo_autonomo;
 
     private DistanceSensor sensorDistancia;
 
@@ -126,19 +126,17 @@ public class SampleMecanumDrive extends MecanumDrive {
 
         linear_slide = hardwareMap.get(DcMotorEx.class, "linearSlide");
         intake_motor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
-        banda_motor =  hardwareMap.get(DcMotorEx.class, "bandaMotor");
+        elevador_motor = hardwareMap.get(DcMotorEx.class, "elevadorMotor");
 
         servo_caja = hardwareMap.get(Servo.class, "servoCaja");
         servo_base = hardwareMap.get(Servo.class, "servoBase");
         servo_avion = hardwareMap.get(Servo.class, "servoAvion");
-        servo_elevador = hardwareMap.get(Servo.class, "servoIntake");
-
-        sensorDistancia = hardwareMap.get(DistanceSensor.class, "sensorDistancia");
+        servo_autonomo = hardwareMap.get(Servo.class, "servoAutonomo");
 
 
         controller_t = new PIDController(pt, it, dt);
 
-        motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront, linear_slide, intake_motor,banda_motor);
+        motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront, linear_slide, intake_motor);
 
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
@@ -257,6 +255,9 @@ public class SampleMecanumDrive extends MecanumDrive {
     public void setSlideMode(DcMotor.RunMode runMode) {
             linear_slide.setMode(runMode);
     }
+    public void setElevadorMode(DcMotor.RunMode runMode) {
+        elevador_motor.setMode(runMode);
+    }
 
 
 
@@ -334,7 +335,9 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     public void setIntakePower(double v) { intake_motor.setPower(v); }
 
-    public void setBandaPower(double v) { banda_motor.setPower(v);}
+    public void setElevadorPower(double v) { elevador_motor.setPower(v); }
+
+    public int getElevadorPos() { return elevador_motor.getCurrentPosition(); }
 
     public void setServoBase(double pos){
         servo_base.setPosition(pos);
@@ -346,8 +349,9 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     public void setServoAvion(double pos) {servo_avion.setPosition(pos); }
 
-    public void setServoElevador(double pos) {servo_elevador.setPosition(pos); }
-    public double getDistanceIntake() {return sensorDistancia.getDistance(DistanceUnit.CM);}
+    public void setServoAutonomo(double pos) {servo_autonomo.setPosition(pos); }
+
+
     @Override
     public double getRawExternalHeading() {
         return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);

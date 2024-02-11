@@ -38,10 +38,9 @@ public class TeleOpFieldCentric extends LinearOpMode {
         drive.setPoseEstimate(SavePose.currentPose);
 
         drive.setSlideMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        drive.setElevadorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         waitForStart();
-        drive.setServoBase(.26);
-        drive.setServoCaja(.3);
 
 
         if (isStopRequested()) return;

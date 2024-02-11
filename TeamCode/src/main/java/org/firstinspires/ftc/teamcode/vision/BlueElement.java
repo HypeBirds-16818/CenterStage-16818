@@ -13,7 +13,7 @@ import org.openftc.easyopencv.OpenCvPipeline;
 @Config
 public class BlueElement extends OpenCvPipeline {
 
-    static int position;
+    int position;
     /*
      * Some color constants
      */
@@ -225,7 +225,7 @@ public class BlueElement extends OpenCvPipeline {
     /*
      * Call this from the OpMode thread to obtain the latest analysis
      */
-    public static int getAnalysis() {
+    public int getAnalysis() {
         return position;
     }
 
