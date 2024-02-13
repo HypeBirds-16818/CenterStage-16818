@@ -76,8 +76,8 @@ public class RojoBackboardAsync extends LinearOpMode {
                 .lineTo(new Vector2d(16, -48.06))
                 .turn(Math.toRadians(90))
                 .forward(6)
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setServoAutonomo(1))
-                .waitSeconds(2)
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setServoAutonomo(.7))
+                .waitSeconds(.5)
                 .build();
 
         TrajectorySequence Rojo_Izquierda_1 = drive.trajectorySequenceBuilder(Rojo_Izquierda.end())
@@ -88,7 +88,7 @@ public class RojoBackboardAsync extends LinearOpMode {
 
         TrajectorySequence Rojo_Medio = drive.trajectorySequenceBuilder(start_pose)
                 .lineTo(new Vector2d(11.25, -36.06))
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setServoAutonomo(1))
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setServoAutonomo(.7))
                 .waitSeconds(.5)
                 .back(3)
                 .build();
@@ -100,7 +100,7 @@ public class RojoBackboardAsync extends LinearOpMode {
 
         TrajectorySequence Rojo_Derecha = drive.trajectorySequenceBuilder(start_pose)
                 .splineTo(new Vector2d(16.81, -48.67), Math.toRadians(87.52))
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setServoAutonomo(1))
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setServoAutonomo(.7))
                 .waitSeconds(.5)
                 .build();
 
@@ -147,11 +147,12 @@ public class RojoBackboardAsync extends LinearOpMode {
             telemetry.update();
         }
 
+        drive.setServoAutonomo(.07);
         waitForStart();
 
         if (isStopRequested()) return;
         int y;
-        drive.setServoAutonomo(.47);
+
 
 
         currentState = State.TRAJECTORY_1;
@@ -167,7 +168,7 @@ public class RojoBackboardAsync extends LinearOpMode {
             // We essentially define the flow of the state machine through this switch statement
             switch (currentState) {
                 case TRAJECTORY_1:
-                    drive.setServoBase(.95);
+                    drive.setServoBase(.96);
                     drive.setServoCaja(.4);
                     if (!drive.isBusy()) {
                         currentState = State.ELEVADOR_SUBIR;

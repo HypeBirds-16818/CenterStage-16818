@@ -83,7 +83,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     private final double ticks_in_degree = 537.7;
     private DcMotorEx linear_slide, intake_motor, elevador_motor;
 
-    private Servo servo_base, servo_caja, servo_avion, servo_autonomo;
+    private Servo servo_base, servo_caja, servo_avion, servo_autonomo, servo_elevador;
 
     private DistanceSensor sensorDistancia;
 
@@ -132,6 +132,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         servo_base = hardwareMap.get(Servo.class, "servoBase");
         servo_avion = hardwareMap.get(Servo.class, "servoAvion");
         servo_autonomo = hardwareMap.get(Servo.class, "servoAutonomo");
+        servo_elevador = hardwareMap.get(Servo.class, "servoElevador");
 
 
         controller_t = new PIDController(pt, it, dt);
@@ -350,6 +351,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     public void setServoAvion(double pos) {servo_avion.setPosition(pos); }
 
     public void setServoAutonomo(double pos) {servo_autonomo.setPosition(pos); }
+    public void setServoElevador(double pos) {servo_elevador.setPosition(pos); }
 
 
     @Override

@@ -24,6 +24,7 @@ public class RojoHumanPlayerBackboard extends LinearOpMode {
     int target = 0;
 
     enum State {
+        ESPERA_INICIAL,
         TRAJECTORY_1,
         ELEVADOR_SUBIR,
         SEGUIR,
@@ -31,6 +32,7 @@ public class RojoHumanPlayerBackboard extends LinearOpMode {
         WAIT_1,
         ELEVADOR_BAJAR,
         ESTACIONAR,
+        SEPARAR_BACK,
         WAIT_2, IDLE
     }
 
@@ -72,11 +74,9 @@ public class RojoHumanPlayerBackboard extends LinearOpMode {
                 .build();
 
 
-
-
         TrajectorySequence Rojo_Izquierda_1 = drive.trajectorySequenceBuilder(Rojo_Izquierda.end())
-                .setReversed(true)
-                .splineTo(new Vector2d(52.6, -31.5), Math.toRadians(0))
+                .setReversed(false)
+                .strafeTo(new Vector2d(52.6, -31.5))
                 .build();
 
 
@@ -92,7 +92,7 @@ public class RojoHumanPlayerBackboard extends LinearOpMode {
 
         TrajectorySequence Rojo_Medio_1 = drive.trajectorySequenceBuilder(Rojo_Medio.end())
                 .setReversed(true)
-                .splineTo(new Vector2d(52.6,-39), Math.toRadians(0))
+                .strafeTo(new Vector2d(52.6,-41))
                 .build();
 
         TrajectorySequence Rojo_Derecha = drive.trajectorySequenceBuilder(start_pose)
@@ -108,27 +108,38 @@ public class RojoHumanPlayerBackboard extends LinearOpMode {
 
         TrajectorySequence Rojo_Derecha_1 = drive.trajectorySequenceBuilder(Rojo_Derecha.end())
                 .setReversed(true)
-                .splineTo(new Vector2d(52 , -44.3), Math.toRadians(0))
+                .strafeTo(new Vector2d(52 , -46.3))
                 .build();
 
+        TrajectorySequence Rojo_separar_izquierda = drive.trajectorySequenceBuilder(Rojo_Izquierda_1.end())
+                .forward(10)
+                .build();
+
+        TrajectorySequence Rojo_separar_medio = drive.trajectorySequenceBuilder(Rojo_Medio_1.end())
+                .forward(10)
+                .build();
+
+        TrajectorySequence Rojo_separar_derecha = drive.trajectorySequenceBuilder(Rojo_Derecha_1.end())
+                .forward(10)
+                .build();
 
 
         while (!isStarted()) {
             telemetry.addData("POSICION: ", redElement.getAnalysis());
             telemetry.update();
         }
-
+        drive.setServoAutonomo(.07);
         waitForStart();
 
         if (isStopRequested()) return;
         int y;
-        drive.setServoAutonomo(.47);
 
 
-        currentState = State.TRAJECTORY_1;
-        if (redElement.getAnalysis()==1) { drive.followTrajectorySequenceAsync(Rojo_Medio); y=1;}
-        else if(redElement.getAnalysis()==2) { drive.followTrajectorySequenceAsync(Rojo_Derecha); y=2; }
-        else { drive.followTrajectorySequenceAsync(Rojo_Izquierda); y=3;}
+        currentState = State.ESPERA_INICIAL;
+        if (redElement.getAnalysis()==1) { y=1;}
+        else if(redElement.getAnalysis()==2) { y=2; }
+        else { y=3;}
+        waitTimer1.reset();
 
         while (opModeIsActive() && !isStopRequested()) {
             // Our state machine logic
@@ -137,15 +148,23 @@ public class RojoHumanPlayerBackboard extends LinearOpMode {
 
             // We essentially define the flow of the state machine through this switch statement
             switch (currentState) {
+                case ESPERA_INICIAL:
+                    if (waitTimer1.seconds() >= 12) {
+                        if (y==1) { drive.followTrajectorySequenceAsync(Rojo_Medio); }
+                        else if(y==2) { drive.followTrajectorySequenceAsync(Rojo_Derecha); }
+                        else { drive.followTrajectorySequenceAsync(Rojo_Izquierda); }
+                    }
+                    break;
+
                 case TRAJECTORY_1:
                     drive.setServoBase(.95);
-                    drive.setServoCaja(.3);
+                    drive.setServoCaja(.4);
                     if (!drive.isBusy()) {
                         currentState = State.ELEVADOR_SUBIR;
                     }
                     break;
                 case ELEVADOR_SUBIR:
-                    target = 1300;
+                    target = 1400;
                     if (!drive.isBusy()) {
                         currentState = State.SEGUIR;
                         if(y==1){drive.followTrajectorySequenceAsync(Rojo_Medio_1);}
@@ -175,13 +194,26 @@ public class RojoHumanPlayerBackboard extends LinearOpMode {
                     break;
                 case WAIT_2:
                     if (waitTimer1.seconds() >= waitTime1) {
+                        currentState = State.SEPARAR_BACK;
+                        if(y==1){drive.followTrajectorySequenceAsync(Rojo_separar_medio);}
+                        if(y==2){drive.followTrajectorySequenceAsync(Rojo_separar_derecha);}
+                        if(y==3){drive.followTrajectorySequenceAsync(Rojo_separar_izquierda);}
+                    }
+                    break;
+                case SEPARAR_BACK:
+                    if (!drive.isBusy()) {
+                        drive.setServoBase(.95);
                         currentState = State.ELEVADOR_BAJAR;
                     }
                     break;
-
                 case ELEVADOR_BAJAR:
                     drive.setServoBase(.62);
                     target = 0;
+                    if (!drive.isBusy()) {
+                        currentState = State.ESTACIONAR;
+                    }
+                    break;
+                case ESTACIONAR:
                     if (!drive.isBusy()) {
                         currentState = State.IDLE;
                     }

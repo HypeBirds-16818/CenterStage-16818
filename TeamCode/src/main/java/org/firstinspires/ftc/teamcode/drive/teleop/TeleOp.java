@@ -28,8 +28,8 @@ public class TeleOp extends LinearOpMode {
         //drive.setSlideMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         waitForStart();
-        drive.setServoBase(.95);
         drive.setServoCaja(.3);
+        drive.setServoBase(.96);
 
         if (isStopRequested()) return;
 
@@ -65,6 +65,7 @@ public class TeleOp extends LinearOpMode {
             double poderElevador = 0;
             if(gamepad1.right_bumper)
             {
+                drive.setServoElevador(.7);
                 if(drive.getElevadorPos() < 14800)
                     poderElevador = 1;
                 else
@@ -72,6 +73,7 @@ public class TeleOp extends LinearOpMode {
             }
             if(gamepad1.left_bumper)
             {
+                drive.setServoElevador(0);
                 if(drive.getElevadorPos() > 300)
                     poderElevador = -1;
                 else
@@ -85,21 +87,29 @@ public class TeleOp extends LinearOpMode {
             //Elevador
             drive.getPID(target);
             if(gamepad2.a){
+                drive.setServoCaja(.3);
+                drive.setServoBase(.96);
                 //base
                 target = 0;
             }
             if(gamepad2.b){
                 //segunda linea
                 target = 1600;
+                drive.setServoCaja(.4);
                 //drive.setServoElevador(.7);
             }
             if(gamepad2.y){
                 //tercera linea
                 target = 2500;
+                drive.setServoCaja(.4);
                 //drive.setServoElevador(.7);
             }
             if(gamepad2.right_bumper)
+            {
                 target += 100;
+                drive.setServoCaja(.4);
+            }
+
             if(gamepad2.left_bumper)
                 target -= 100;
 
@@ -109,25 +119,20 @@ public class TeleOp extends LinearOpMode {
 
 
             //Outake
-            //Poner en posicion de subida
             if(gamepad2.dpad_up) {
-                drive.setServoCaja(.3);
-                drive.setServoBase(.95);
-            }
-            //Poner en posicion de bajada, faltan valores reales
-            if(gamepad2.dpad_down) {
-                drive.setServoBase(.62);
                 drive.setServoCaja(.4);
+            }
+            if(gamepad2.dpad_down) {
+                drive.setServoCaja(.3);
             }
             if(gamepad2.dpad_left)
             {
-                drive.setServoCaja(.4);
+                drive.setServoCaja(.37);
             }
             if(gamepad2.dpad_right)
             {
-                drive.setServoBase(.35);
+                drive.setServoBase(.62);
             }
-
 
             //Climber (to do)
 
