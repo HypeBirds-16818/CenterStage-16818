@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.vision.BlueElement;
+import org.firstinspires.ftc.teamcode.vision.BlueElementHP;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -18,15 +18,15 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 @Autonomous(name = "Azul HP")
 public class AzulHumanPlayer extends LinearOpMode {
     private OpenCvCamera camera;
-    private BlueElement blueElement;
+    private BlueElementHP blueElementHP;
     private String webcamName = "Webcam 1";
-    Pose2d start_pose = new Pose2d(-38.61, 67.31, Math.toRadians(270));
+    Pose2d start_pose = new Pose2d(15.92, -67.31, Math.toRadians(90.00));
 
     @Override
     public void runOpMode() throws InterruptedException {
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, webcamName));
-        blueElement = new BlueElement();
-        camera.setPipeline(blueElement);
+        blueElementHP = new BlueElementHP();
+        camera.setPipeline(blueElementHP);
 
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {
@@ -45,46 +45,37 @@ public class AzulHumanPlayer extends LinearOpMode {
         ElapsedTime waitTimer1 = new ElapsedTime();
 
         TrajectorySequence Azul_Izquierda = drive.trajectorySequenceBuilder(start_pose)
-                .lineTo(new Vector2d(-38, 48.06))
-                .turn(Math.toRadians(-90))
-                .forward(6)
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setServoAutonomo(1))
+                .lineTo(new Vector2d(16, -43.06))
+                .turn(Math.toRadians(90))
+                .forward(4)
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setServoAutonomo(.7))
                 .waitSeconds(.5)
-                .setReversed(true)
-                .strafeTo(new Vector2d(-38,9))
-                .lineTo(new Vector2d(53, 9.35))
                 .build();
 
         TrajectorySequence Azul_Medio = drive.trajectorySequenceBuilder(start_pose)
-                .splineTo(new Vector2d(-38,9),Math.toRadians(90))
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setServoAutonomo(1))
+                .lineTo(new Vector2d(10.92, -38.06))
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setServoAutonomo(.7))
                 .waitSeconds(.5)
-                .setReversed(true)
-                .lineTo(new Vector2d(53, 9.35))
+                .back(3)
                 .build();
 
         TrajectorySequence Azul_Derecha = drive.trajectorySequenceBuilder(start_pose)
-                .lineTo(new Vector2d(-38, 48.06))
-                .turn(Math.toRadians(90))
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setServoAutonomo(1))
+                .splineTo(new Vector2d(16.81, -48.67), Math.toRadians(87.52))
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setServoAutonomo(.7))
                 .waitSeconds(.5)
-                .strafeTo(new Vector2d(-38,9))
-                .setReversed(true)
-                .lineTo(new Vector2d(53, 9.35))
                 .build();
 //        TrajectorySequence forw = drive.trajectorySequenceBuilder(start_pose)
 
 
-        int x = blueElement.getAnalysis();
         while (!isStarted()) {
-            telemetry.addData("ROTATION: ", blueElement.getAnalysis());
+            telemetry.addData("ROTATION: ", blueElementHP.getAnalysis());
             telemetry.update();
         }
         waitForStart();
-        drive.setServoAutonomo(.47);
+        drive.setServoAutonomo(.07);
         if (isStopRequested()) return;
-        if (blueElement.getAnalysis()==1) { drive.followTrajectorySequence(Azul_Medio); }
-        else if(blueElement.getAnalysis()==2) { drive.followTrajectorySequence(Azul_Derecha); }
+        if (blueElementHP.getAnalysis()==1) { drive.followTrajectorySequence(Azul_Medio); }
+        else if(blueElementHP.getAnalysis()==2) { drive.followTrajectorySequence(Azul_Derecha); }
         else { drive.followTrajectorySequence(Azul_Izquierda); }
 
     }

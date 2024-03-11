@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.drive.teleop.SavePose;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.vision.RedElement;
+import org.firstinspires.ftc.teamcode.vision.RedElementHP;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -19,7 +20,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 @Autonomous(name = "Rojo HP con Back")
 public class RojoHumanPlayerBackboard extends LinearOpMode {
     private OpenCvCamera camera;
-    private RedElement redElement;
+    private RedElementHP redElementHP;
     private String webcamName = "Webcam 1";
     int target = 0;
 
@@ -42,8 +43,8 @@ public class RojoHumanPlayerBackboard extends LinearOpMode {
 
     public void runOpMode() throws InterruptedException {
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, webcamName));
-        redElement = new RedElement();
-        camera.setPipeline(redElement);
+        redElementHP = new RedElementHP();
+        camera.setPipeline(redElementHP);
 
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
         {
@@ -66,7 +67,7 @@ public class RojoHumanPlayerBackboard extends LinearOpMode {
         TrajectorySequence Rojo_Izquierda = drive.trajectorySequenceBuilder(start_pose)
                 .lineTo(new Vector2d(-38, -48.06))
                 .turn(Math.toRadians(90))
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setServoAutonomo(1))
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setServoAutonomo(.7))
                 .waitSeconds(.5)
                 .setReversed(true)
                 .strafeTo(new Vector2d(-38,-9))
@@ -80,9 +81,10 @@ public class RojoHumanPlayerBackboard extends LinearOpMode {
                 .build();
 
 
+
         TrajectorySequence Rojo_Medio = drive.trajectorySequenceBuilder(start_pose)
                 .splineTo(new Vector2d(-38,-9),Math.toRadians(270))
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setServoAutonomo(1))
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setServoAutonomo(.7))
                 .waitSeconds(.5)
                 .setReversed(true)
                 .lineTo(new Vector2d(41.47, -9.35))
@@ -96,10 +98,10 @@ public class RojoHumanPlayerBackboard extends LinearOpMode {
                 .build();
 
         TrajectorySequence Rojo_Derecha = drive.trajectorySequenceBuilder(start_pose)
-                .lineTo(new Vector2d(-38, -48.06))
+                .lineTo(new Vector2d(-38, -43.06))
                 .turn(Math.toRadians(-90))
                 .forward(6)
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setServoAutonomo(1))
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setServoAutonomo(.7))
                 .waitSeconds(.5)
                 .strafeTo(new Vector2d(-38,-9))
                 .setReversed(true)
@@ -125,7 +127,7 @@ public class RojoHumanPlayerBackboard extends LinearOpMode {
 
 
         while (!isStarted()) {
-            telemetry.addData("POSICION: ", redElement.getAnalysis());
+            telemetry.addData("POSICION: ", redElementHP.getAnalysis());
             telemetry.update();
         }
         drive.setServoAutonomo(.07);
@@ -133,12 +135,13 @@ public class RojoHumanPlayerBackboard extends LinearOpMode {
 
         if (isStopRequested()) return;
         int y;
+        drive.setServoAutonomo(.07);
 
 
         currentState = State.ESPERA_INICIAL;
-        if (redElement.getAnalysis()==1) { y=1;}
-        else if(redElement.getAnalysis()==2) { y=2; }
-        else { y=3;}
+        if (redElementHP.getAnalysis()==1) { y=3;}
+        else if(redElementHP.getAnalysis()==2) { y=1; }
+        else { y=2;}
         waitTimer1.reset();
 
         while (opModeIsActive() && !isStopRequested()) {
@@ -149,10 +152,11 @@ public class RojoHumanPlayerBackboard extends LinearOpMode {
             // We essentially define the flow of the state machine through this switch statement
             switch (currentState) {
                 case ESPERA_INICIAL:
-                    if (waitTimer1.seconds() >= 12) {
+                    if (waitTimer1.seconds() >= 1) {
                         if (y==1) { drive.followTrajectorySequenceAsync(Rojo_Medio); }
                         else if(y==2) { drive.followTrajectorySequenceAsync(Rojo_Derecha); }
                         else { drive.followTrajectorySequenceAsync(Rojo_Izquierda); }
+                        currentState = State.TRAJECTORY_1;
                     }
                     break;
 

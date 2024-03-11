@@ -14,11 +14,11 @@ public class RedElement extends OpenCvPipeline{
     static final Scalar BLUE = new Scalar(0, 0, 255);
     static final Scalar GREEN = new Scalar(0, 255, 0);
 
-    public static int region1X = 60;
-    public static int region1Y = 220;
+    public static int region1X = 260;
+    public static int region1Y = 160;
 
-    public static int region2X = 360;
-    public static int region2Y = 240;
+    public static int region2X = 500;
+    public static int region2Y = 220;
     static Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(region1X,region1Y);
     static Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(region2X,region2Y);
 

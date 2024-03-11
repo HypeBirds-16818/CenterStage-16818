@@ -1,37 +1,22 @@
 package org.firstinspires.ftc.teamcode.autonomo;
 
 
-import android.util.Size;
-
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.drive.teleop.SavePose;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.vision.BlueElement;
-import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.tfod.TfodProcessor;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
-import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.drive.teleop.SavePose;
-import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import java.util.List;
 
 
 @Autonomous(name = "Azul Back")
@@ -39,7 +24,7 @@ public class AzulBackboardAsync extends LinearOpMode {
     private OpenCvCamera camera;
     private BlueElement blueElement;
     private String webcamName = "Webcam 1";
-    static int x;
+
     int target = 0;
     enum State {
         TRAJECTORY_1,
@@ -73,33 +58,34 @@ public class AzulBackboardAsync extends LinearOpMode {
 
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         drive.setPoseEstimate(start_pose);
-        double waitTime1 = 3;
+        double waitTime1 = 1;
         ElapsedTime waitTimer1 = new ElapsedTime();
 
         TrajectorySequence Azul_Izquierda = drive.trajectorySequenceBuilder(start_pose)
-                .splineTo(new Vector2d(19.00, 53.67), Math.toRadians(270))
+                .splineTo(new Vector2d(30, 48.67), Math.toRadians(270))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setServoAutonomo(.7))
                 .waitSeconds(.5)
                 .build();
 
         TrajectorySequence Azul_Izq_1 = drive.trajectorySequenceBuilder(Azul_Izquierda.end())
                 .setReversed(true)
-                .splineTo(new Vector2d(52 , 46.3), Math.toRadians(0))
+                .splineTo(new Vector2d(51 , 50), Math.toRadians(0))
                 .build();
 
         TrajectorySequence Azul_Medio = drive.trajectorySequenceBuilder(start_pose)
-                .lineTo(new Vector2d(11.25, -36.06))
+                .lineTo(new Vector2d(14.92, 38))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setServoAutonomo(.7))
                 .waitSeconds(.5)
+                .back(3)
                 .build();
 
         TrajectorySequence Azul_Mid_1 = drive.trajectorySequenceBuilder(Azul_Medio.end())
                 .setReversed(true)
-                .splineTo(new Vector2d(52.6,41), Math.toRadians(0))
+                .splineTo(new Vector2d(52 , 42.5), Math.toRadians(0))
                 .build();
 
         TrajectorySequence Azul_Derecha = drive.trajectorySequenceBuilder(start_pose)
-                .lineTo(new Vector2d(16, 44.06))
+                .lineTo(new Vector2d(16, 26     ))
                 .turn(Math.toRadians(-90))
                 .forward(6)
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setServoAutonomo(.7))
@@ -108,7 +94,7 @@ public class AzulBackboardAsync extends LinearOpMode {
 
         TrajectorySequence Azul_Der_1 = drive.trajectorySequenceBuilder(Azul_Derecha.end())
                 .setReversed(true)
-                .splineTo(new Vector2d(52.6, 31.5), Math.toRadians(0))
+                .splineTo(new Vector2d(52.6,33.6), Math.toRadians(0))
                 .build();
 
         TrajectorySequence Azul_separar_izquierda = drive.trajectorySequenceBuilder(Azul_Izq_1.end())
@@ -124,21 +110,21 @@ public class AzulBackboardAsync extends LinearOpMode {
                 .build();
 
         TrajectorySequence Azul_Final_Izq = drive.trajectorySequenceBuilder(Azul_separar_izquierda.end())
-                .strafeTo(new Vector2d(47, 67))
+                .strafeTo(new Vector2d(45, 65))
                 .setReversed(true)
-                .lineTo(new Vector2d(61.88, 67))
+                .lineTo(new Vector2d(61.88, 65))
                 .build();
 
         TrajectorySequence Azul_Final_Mid = drive.trajectorySequenceBuilder(Azul_separar_medio.end())
-                .strafeTo(new Vector2d(47, 67))
+                .strafeTo(new Vector2d(45, 65))
                 .setReversed(true)
-                .lineTo(new Vector2d(61.88, 67))
+                .lineTo(new Vector2d(61.88, 65))
                 .build();
 
         TrajectorySequence Azul_Final_Der = drive.trajectorySequenceBuilder(Azul_separar_derecha.end())
-                .strafeTo(new Vector2d(47, 67))
+                .strafeTo(new Vector2d(45, 65))
                 .setReversed(true)
-                .lineTo(new Vector2d(61.88, 67))
+                .lineTo(new Vector2d(61.88, 65))
                 .build();
 
         while (!isStarted()) {
@@ -146,16 +132,17 @@ public class AzulBackboardAsync extends LinearOpMode {
             telemetry.update();
         }
 
-        drive.setServoAutonomo(.07);
+
         waitForStart();
 
         if (isStopRequested()) return;
         int y;
+        drive.setServoAutonomo(.07);
 
         currentState = State.TRAJECTORY_1;
-        if (blueElement.getAnalysis()==1) { drive.followTrajectorySequenceAsync(Azul_Medio); y=1; }
-        else if(blueElement.getAnalysis()==2) { drive.followTrajectorySequenceAsync(Azul_Derecha); y=2; }
-        else { drive.followTrajectorySequenceAsync(Azul_Izquierda); y=3; }
+        if (blueElement.getAnalysis()==1) { drive.followTrajectorySequenceAsync(Azul_Izquierda); y=3; }
+        else if(blueElement.getAnalysis()==2) { drive.followTrajectorySequenceAsync(Azul_Medio); y=1; }
+        else { drive.followTrajectorySequenceAsync(Azul_Derecha); y=2; }
 
         while (opModeIsActive() && !isStopRequested()) {
             // Our state machine logic
@@ -172,7 +159,7 @@ public class AzulBackboardAsync extends LinearOpMode {
                     }
                     break;
                 case ELEVADOR_SUBIR:
-                    target = 1400;
+                    target = 1200;
                     if (!drive.isBusy()) {
                         currentState = State.SEGUIR;
                         if(y==1){drive.followTrajectorySequenceAsync(Azul_Mid_1);}

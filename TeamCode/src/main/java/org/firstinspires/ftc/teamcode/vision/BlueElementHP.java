@@ -11,7 +11,7 @@ import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 @Config
-public class BlueElement extends OpenCvPipeline {
+public class BlueElementHP extends OpenCvPipeline {
 
     int position;
     /*
@@ -20,11 +20,11 @@ public class BlueElement extends OpenCvPipeline {
     static final Scalar BLUE = new Scalar(0, 0, 255);
     static final Scalar GREEN = new Scalar(0, 255, 0);
 
-    public static int region1X = 130;
-    public static int region1Y = 220;
+    public static int region1X = 260;
+    public static int region1Y = 160;
 
-    public static int region2X = 390;
-    public static int region2Y = 175;
+    public static int region2X = 500;
+    public static int region2Y = 220;
 
     /*
      * The core values which define the location and size of the sample regions

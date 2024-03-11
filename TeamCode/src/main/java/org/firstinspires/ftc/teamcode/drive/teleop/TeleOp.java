@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOpMty")
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOpNacional")
 public class TeleOp extends LinearOpMode {
     public static int target = 0;
 
@@ -29,7 +29,8 @@ public class TeleOp extends LinearOpMode {
 
         waitForStart();
         drive.setServoCaja(.3);
-        drive.setServoBase(.96);
+        drive.setServoBase(.92);
+        drive.setServoOutake(1);
 
         if (isStopRequested()) return;
 
@@ -59,13 +60,13 @@ public class TeleOp extends LinearOpMode {
 
 
             if(gamepad1.a){
-                drive.setServoAvion(0);
+                drive.setServoAvion(.9);
             }
 
             double poderElevador = 0;
             if(gamepad1.right_bumper)
             {
-                drive.setServoElevador(.7);
+                drive.setServoElevador(.4);
                 if(drive.getElevadorPos() < 14800)
                     poderElevador = 1;
                 else
@@ -73,7 +74,7 @@ public class TeleOp extends LinearOpMode {
             }
             if(gamepad1.left_bumper)
             {
-                drive.setServoElevador(0);
+                drive.setServoElevador(0.7);
                 if(drive.getElevadorPos() > 300)
                     poderElevador = -1;
                 else
@@ -87,8 +88,9 @@ public class TeleOp extends LinearOpMode {
             //Elevador
             drive.getPID(target);
             if(gamepad2.a){
+                drive.setServoBase(.92);
                 drive.setServoCaja(.3);
-                drive.setServoBase(.96);
+                drive.setServoOutake(1);
                 //base
                 target = 0;
             }
@@ -96,38 +98,42 @@ public class TeleOp extends LinearOpMode {
                 //segunda linea
                 target = 1600;
                 drive.setServoCaja(.4);
+                drive.setServoOutake(.87);
                 //drive.setServoElevador(.7);
             }
             if(gamepad2.y){
                 //tercera linea
                 target = 2500;
                 drive.setServoCaja(.4);
+                drive.setServoOutake(.87);
                 //drive.setServoElevador(.7);
             }
             if(gamepad2.right_bumper)
             {
                 target += 100;
                 drive.setServoCaja(.4);
+                drive.setServoOutake(.87);
             }
 
             if(gamepad2.left_bumper)
                 target -= 100;
 
             //Intake
-            double intakePower = Range.clip(gamepad2.right_stick_y, -1, 1);
+            double intakePower = Range.clip(gamepad2.right_stick_y, -.85, .85);
             drive.setIntakePower(intakePower);
-
 
             //Outake
             if(gamepad2.dpad_up) {
-                drive.setServoCaja(.4);
+                drive.setServoOutake(.87);
+                drive.setServoCaja(.3);
             }
             if(gamepad2.dpad_down) {
                 drive.setServoCaja(.3);
+                drive.setServoOutake(1);
             }
             if(gamepad2.dpad_left)
             {
-                drive.setServoCaja(.37);
+                drive.setServoOutake(1);
             }
             if(gamepad2.dpad_right)
             {

@@ -73,21 +73,21 @@ public class RojoBackboardAsync extends LinearOpMode {
         ElapsedTime waitTimer1 = new ElapsedTime();
 
         TrajectorySequence Rojo_Izquierda = drive.trajectorySequenceBuilder(start_pose)
-                .lineTo(new Vector2d(16, -48.06))
+                .lineTo(new Vector2d(16, -43.06))
                 .turn(Math.toRadians(90))
-                .forward(6)
+                .forward(4)
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setServoAutonomo(.7))
                 .waitSeconds(.5)
                 .build();
 
         TrajectorySequence Rojo_Izquierda_1 = drive.trajectorySequenceBuilder(Rojo_Izquierda.end())
                 .setReversed(true)
-                .splineTo(new Vector2d(52.6, -31.5), Math.toRadians(0))
+                .splineTo(new Vector2d(52.6, -28.5), Math.toRadians(0))
                 .build();
 
 
         TrajectorySequence Rojo_Medio = drive.trajectorySequenceBuilder(start_pose)
-                .lineTo(new Vector2d(11.25, -36.06))
+                .lineTo(new Vector2d(10.92, -38.06))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> drive.setServoAutonomo(.7))
                 .waitSeconds(.5)
                 .back(3)
@@ -95,7 +95,7 @@ public class RojoBackboardAsync extends LinearOpMode {
 
         TrajectorySequence Rojo_Medio_1 = drive.trajectorySequenceBuilder(Rojo_Medio.end())
                 .setReversed(true)
-                .splineTo(new Vector2d(52.6,-41), Math.toRadians(0))
+                .splineTo(new Vector2d(52.6,-38), Math.toRadians(0))
                 .build();
 
         TrajectorySequence Rojo_Derecha = drive.trajectorySequenceBuilder(start_pose)
@@ -106,7 +106,7 @@ public class RojoBackboardAsync extends LinearOpMode {
 
         TrajectorySequence Rojo_Derecha_1 = drive.trajectorySequenceBuilder(Rojo_Derecha.end())
                 .setReversed(true)
-                .splineTo(new Vector2d(52 , -46.3), Math.toRadians(0))
+                .splineTo(new Vector2d(52 , -45.3), Math.toRadians(0))
                 .build();
 
         TrajectorySequence Rojo_separar_izquierda = drive.trajectorySequenceBuilder(Rojo_Izquierda_1.end())
@@ -122,38 +122,34 @@ public class RojoBackboardAsync extends LinearOpMode {
                 .build();
 
         TrajectorySequence Rojo_Final_Izq = drive.trajectorySequenceBuilder(Rojo_separar_izquierda.end())
-                .strafeTo(new Vector2d(45, -67))
+                .strafeTo(new Vector2d(45, -65))
                 .setReversed(true)
-                .lineTo(new Vector2d(61.88, -67))
+                .lineTo(new Vector2d(61.88, -65))
                 .build();
 
         TrajectorySequence Rojo_Final_Mid = drive.trajectorySequenceBuilder(Rojo_separar_medio.end())
-                .strafeTo(new Vector2d(45, -67))
+                .strafeTo(new Vector2d(45, -65))
                 .setReversed(true)
-                .lineTo(new Vector2d(61.88, -67))
+                .lineTo(new Vector2d(61.88, -65))
                 .build();
 
         TrajectorySequence Rojo_Final_Der = drive.trajectorySequenceBuilder(Rojo_separar_derecha.end())
-                .strafeTo(new Vector2d(45, -67))
+                .strafeTo(new Vector2d(45, -65))
                 .setReversed(true)
-                .lineTo(new Vector2d(61.88, -67))
+                .lineTo(new Vector2d(61.88, -65))
                 .build();
-
-
-
 
         while (!isStarted()) {
             telemetry.addData("POSICION: ", redElement.getAnalysis());
             telemetry.update();
         }
 
-        drive.setServoAutonomo(.07);
+
         waitForStart();
 
         if (isStopRequested()) return;
         int y;
-
-
+        drive.setServoAutonomo(.07);
 
         currentState = State.TRAJECTORY_1;
         if (redElement.getAnalysis()==1) { drive.followTrajectorySequenceAsync(Rojo_Medio); y=1;}
@@ -175,7 +171,7 @@ public class RojoBackboardAsync extends LinearOpMode {
                     }
                     break;
                 case ELEVADOR_SUBIR:
-                    target = 1400;
+                    target = 1200;
                     if (!drive.isBusy()) {
                         currentState = State.SEGUIR;
                         if(y==1){drive.followTrajectorySequenceAsync(Rojo_Medio_1);}

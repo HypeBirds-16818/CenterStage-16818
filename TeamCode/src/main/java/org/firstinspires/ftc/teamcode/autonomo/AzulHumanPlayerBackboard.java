@@ -10,8 +10,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.drive.teleop.SavePose;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.vision.BlueElement;
-import org.firstinspires.ftc.teamcode.vision.RedElement;
+import org.firstinspires.ftc.teamcode.vision.BlueElementHP;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
@@ -20,7 +19,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 @Autonomous(name = "Azul HP con Back")
 public class AzulHumanPlayerBackboard extends LinearOpMode {
     private OpenCvCamera camera;
-    private BlueElement blueElement;
+    private BlueElementHP blueElement;
     private String webcamName = "Webcam 1";
     int target = 0;
 
@@ -43,7 +42,7 @@ public class AzulHumanPlayerBackboard extends LinearOpMode {
 
     public void runOpMode() throws InterruptedException {
         camera = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, webcamName));
-        blueElement = new BlueElement();
+        blueElement = new BlueElementHP();
         camera.setPipeline(blueElement);
 
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()

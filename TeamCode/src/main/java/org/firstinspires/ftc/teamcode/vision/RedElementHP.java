@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.vision;
 
-import com.acmerobotics.dashboard.config.Config;
-
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -10,13 +8,8 @@ import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-@Config
-public class BlueElement extends OpenCvPipeline {
-
-    int position;
-    /*
-     * Some color constants
-     */
+public class RedElementHP extends OpenCvPipeline{
+    public static int position;
     static final Scalar BLUE = new Scalar(0, 0, 255);
     static final Scalar GREEN = new Scalar(0, 255, 0);
 
@@ -25,33 +18,12 @@ public class BlueElement extends OpenCvPipeline {
 
     public static int region2X = 390;
     public static int region2Y = 175;
-
-    /*
-     * The core values which define the location and size of the sample regions
-     */
     static Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(region1X,region1Y);
     static Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(region2X,region2Y);
 
     static final int REGION_WIDTH = 80;
     static final int REGION_HEIGHT = 80;
 
-    /*
-     * Points which actually define the sample region rectangles, derived from above values
-     *
-     * Example of how points A and B work to define a rectangle
-     *
-     *   ------------------------------------
-     *   | (0,0) Point A                    |
-     *   |                                  |
-     *   |                                  |
-     *   |                                  |
-     *   |                                  |
-     *   |                                  |
-     *   |                                  |
-     *   |                  Point B (70,50) |
-     *   ------------------------------------
-     *
-     */
     Point region1_pointA = new Point(
             REGION1_TOPLEFT_ANCHOR_POINT.x,
             REGION1_TOPLEFT_ANCHOR_POINT.y);
@@ -66,19 +38,15 @@ public class BlueElement extends OpenCvPipeline {
             REGION2_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
 
     public static double hMin = 0;
-    public static double sMin = 50;
+    public static double sMin = 135;
     public static double vMin = 0;
 
     public static double hMax = 255;
-    public static double sMax = 120;
+    public static double sMax = 200;
     public static double vMax = 255;
 
     static Scalar redHsvMin = new Scalar(hMin, sMin, vMin, 0);
     static Scalar redHsvMax = new Scalar(hMax, sMax, vMax, 255);
-
-    /*
-     * Working variables
-     */
     Mat region1_Cb, region2_Cb;
     Mat YCrCb = new Mat();
     Mat mask = new Mat();
@@ -86,8 +54,6 @@ public class BlueElement extends OpenCvPipeline {
     Mat maskedFrame = new Mat();
 
     int avg1, avg2;
-
-    // Volatile since accessed by OpMode thread w/o synchronization
 
     void mask(Mat frame) {
         Imgproc.cvtColor(frame, YCrCb, Imgproc.COLOR_RGB2YCrCb);
@@ -98,12 +64,6 @@ public class BlueElement extends OpenCvPipeline {
     public void init(Mat firstFrame)
     {
         mask(firstFrame);
-
-        /*
-         * Submats are a persistent reference to a region of the parent
-         * buffer. Any changes to the child affect the parent, and the
-         * reverse also holds true.
-         */
         region1_Cb = mask.submat(new Rect(region1_pointA, region1_pointB));
         region2_Cb = mask.submat(new Rect(region2_pointA, region2_pointB));
     }
@@ -179,7 +139,7 @@ public class BlueElement extends OpenCvPipeline {
          * Now that we found the max, we actually need to go and
          * figure out which sample region that value was from
          */
-        if(avg1 >= (100f)) // Was it from region 1?
+        if(avg1 >= (255f / 2)) // Was it from region 1?
         {
             position = 1; // Record our analysis
 
@@ -194,7 +154,7 @@ public class BlueElement extends OpenCvPipeline {
                     GREEN, // The color the rectangle is drawn in
                     -1); // Negative thickness means solid fill
         }
-        else if(avg2  >= (100f)) // Was it from region 2?
+        else if(avg2  >= (255f / 2)) // Was it from region 2?
         {
             position = 2; // Record our analysis
 
@@ -225,8 +185,8 @@ public class BlueElement extends OpenCvPipeline {
     /*
      * Call this from the OpMode thread to obtain the latest analysis
      */
+
     public int getAnalysis() {
         return position;
     }
-
 }
