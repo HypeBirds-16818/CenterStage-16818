@@ -17,17 +17,22 @@ import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint;
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceRunner;
@@ -54,10 +59,11 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(0, 0, 0);
-    public static PIDCoefficients HEADING_PID = new PIDCoefficients(0, 0, 0);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(8, 0, 0);
+    public static PIDCoefficients HEADING_PID = new PIDCoefficients(8, 0, 0);
 
-    public static double LATERAL_MULTIPLIER = 1;
+    public static double LATERAL_MULTIPLIER = 1.363636;
+
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
@@ -71,6 +77,20 @@ public class SampleMecanumDrive extends MecanumDrive {
     private TrajectoryFollower follower;
 
     private DcMotorEx leftFront, leftRear, rightRear, rightFront;
+
+    private PIDController controller_t;
+    private final double pt = 0.008, it = 0, dt = 0.0001, ft = 0.1;
+    private final double ticks_in_degree = 537.7;
+    private DcMotorEx linear_slide, intake_motor, elevador_motor;
+
+    private Servo servo_base, servo_caja, servo_avion, servo_autonomo, servo_elevador, servo_outake;
+
+    private DistanceSensor sensorDistancia;
+
+    public enum intakeState  {
+        IDLE, TAKING, RAISING1, RAISING2, TURNING, OPENING, TURNINGBACK, FALLING1, FALLING2
+    }
+
     private List<DcMotorEx> motors;
 
     private IMU imu;
@@ -104,7 +124,22 @@ public class SampleMecanumDrive extends MecanumDrive {
         rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
 
-        motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
+        linear_slide = hardwareMap.get(DcMotorEx.class, "linearSlide");
+        intake_motor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
+        elevador_motor = hardwareMap.get(DcMotorEx.class, "elevadorMotor");
+
+        servo_caja = hardwareMap.get(Servo.class, "servoCaja");
+        servo_base = hardwareMap.get(Servo.class, "servoBase");
+        servo_avion = hardwareMap.get(Servo.class, "servoAvion");
+        servo_autonomo = hardwareMap.get(Servo.class, "servoAutonomo");
+        servo_elevador = hardwareMap.get(Servo.class, "servoElevador");
+        servo_outake = hardwareMap.get(Servo.class, "servoOutake");
+
+
+
+        controller_t = new PIDController(pt, it, dt);
+
+        motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront, linear_slide, intake_motor);
 
         for (DcMotorEx motor : motors) {
             MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
@@ -123,12 +158,16 @@ public class SampleMecanumDrive extends MecanumDrive {
         }
 
         // TODO: reverse any motors using DcMotor.setDirection()
+        rightFront.setDirection(DcMotorEx.Direction.REVERSE);
+        leftRear.setDirection(DcMotorEx.Direction.REVERSE);
+        intake_motor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         List<Integer> lastTrackingEncPositions = new ArrayList<>();
         List<Integer> lastTrackingEncVels = new ArrayList<>();
 
         // TODO: if desired, use setLocalizer() to change the localization method
         // setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap, lastTrackingEncPositions, lastTrackingEncVels));
+        setLocalizer(new TwoWheelTrackingLocalizer(hardwareMap, this));
 
         trajectorySequenceRunner = new TrajectorySequenceRunner(
                 follower, HEADING_PID, batteryVoltageSensor,
@@ -216,6 +255,15 @@ public class SampleMecanumDrive extends MecanumDrive {
         }
     }
 
+    public void setSlideMode(DcMotor.RunMode runMode) {
+            linear_slide.setMode(runMode);
+    }
+    public void setElevadorMode(DcMotor.RunMode runMode) {
+        elevador_motor.setMode(runMode);
+    }
+
+
+
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior zeroPowerBehavior) {
         for (DcMotorEx motor : motors) {
             motor.setZeroPowerBehavior(zeroPowerBehavior);
@@ -288,6 +336,26 @@ public class SampleMecanumDrive extends MecanumDrive {
         rightFront.setPower(v3);
     }
 
+    public void setIntakePower(double v) { intake_motor.setPower(v); }
+
+    public void setElevadorPower(double v) { elevador_motor.setPower(v); }
+
+    public int getElevadorPos() { return elevador_motor.getCurrentPosition(); }
+
+    public void setServoBase(double pos){
+        servo_base.setPosition(pos);
+    }
+
+    public void setServoCaja(double pos){
+        servo_caja.setPosition(pos);
+    }
+
+    public void setServoAvion(double pos) {servo_avion.setPosition(pos); }
+
+    public void setServoAutonomo(double pos) {servo_autonomo.setPosition(pos); }
+    public void setServoElevador(double pos) {servo_elevador.setPosition(pos); }
+    public void setServoOutake(double pos) {servo_outake.setPosition(pos);}
+
     @Override
     public double getRawExternalHeading() {
         return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
@@ -308,4 +376,16 @@ public class SampleMecanumDrive extends MecanumDrive {
     public static TrajectoryAccelerationConstraint getAccelerationConstraint(double maxAccel) {
         return new ProfileAccelerationConstraint(maxAccel);
     }
+
+    public void getPID(int target){
+        controller_t.setPID(pt, it, dt);
+        int topPos = linear_slide.getCurrentPosition();
+        double pid = controller_t.calculate(topPos, target);
+        double ff = Math.cos(Math.toRadians(target / ticks_in_degree)) * ft;
+
+        double power = pid + ff;
+
+        linear_slide.setPower(power);
+    }
+
 }
